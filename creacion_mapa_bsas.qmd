@@ -1,0 +1,203 @@
+---
+title: "Creación Mapas Buenos Aires"
+---
+
+```{r setup}
+library(tidyverse)
+library(stringr)
+library(sf)
+
+# El amba consta de 40 municipios mas ciudad de buenos aires
+# fuente: https://www.argentina.gob.ar/dami/centro/amba
+# Vamos a hacer una seleccion de amba con menos partidos
+
+# Lista de los partidos que vamos a considerar AMBA incluyendo comunas CABA
+amba_reducido_names <- c('Almirante Brown',
+                         'Avellaneda',
+                         'Berazategui',
+                         paste('Comuna', 1:15), # CABA
+                         'Esteban Echeverría', 'Escobar', 'Ezeiza',
+                         'Florencio Varela',
+                         'General San Martín',
+                         'Hurlingham',
+                         'Ituzaingó',
+                         'José C. Paz',
+                         'La Matanza',  'Lanús', 'Lomas de Zamora',
+                         'Malvinas Argentinas', 'Merlo', 'Moreno', 'Morón',
+                         'Quilmes', 'Pilar', 'Presidente Perón',
+                         'San Fernando', 'San Isidro', 'San Miguel',
+                         'Tigre', 'Tres de Febrero',
+                         'Vicente López')
+```
+
+# Area Metropolitana de Buenos Aires (AMBA) y Ciudad Autonoma de Buenos Aires (CABA)
+
+```{r}
+
+# Estos shapefiles fueron extraidos del Instituto Geografico Nacional (IGN)
+
+amba <- st_read("data/inicial/departamentos.shp") |>
+  st_zm() |>
+  filter(str_detect(NAM, paste(amba_reducido_names, collapse = "|")),
+         SAG %in% c('ARBA - Gerencia de Servicios Catastrales',
+                    'Direc. de Catastro'))
+
+
+# Chequeo el resultado visualmente
+amba_reducido <- amba |>
+  dplyr::select('partido' = NAM , geometry) |>
+  dplyr::filter(partido %in% amba_reducido_names)
+
+ggplot() +
+  geom_sf(data = amba_reducido)+
+  theme_minimal()
+
+
+
+```
+
+
+### Remuevo poligonos duplicados
+
+```{r}
+# Vemos que San Fernando esta compuesto por dos poligonos,
+# Uno es el delta, y deberiamos eliminarlo
+
+ggplot() +
+  geom_sf(data = subset(amba_reducido,
+                        partido == 'San Fernando'))+
+  theme_minimal()
+
+# Lo paso a poligono para eliminar el extra
+amba_reducido = st_cast(amba_reducido,"POLYGON")
+
+# Chequeo que se cual quiero eliminar
+ggplot() +
+  geom_sf(data = amba_reducido$geom[30])+
+  theme_minimal()
+
+# Elimino el poligono extra
+amba_reducido <- amba_reducido[-30,]
+
+# Archivo vectorial final de AMBA
+ggplot() +
+  geom_sf(data = amba_reducido)+
+  theme_minimal()
+```
+
+
+Este es el archivo con los poligonos finales seleccionados para AMBA
+
+```{r}
+
+## guardo el archivo
+
+st_write(amba, "data/procesada/amba_ampliado.gpkg", append = FALSE)
+
+```
+
+
+
+# Provincia de Buenos Aires
+
+```{r}
+# Obtengo los poligonos desde el IGN
+bsas <- sf::st_read('data/inicial/departamentos.shp') |>
+  dplyr::filter(SAG %in% c('Direc. de Catastro', # comunas
+                           'ARBA - Gerencia de Servicios Catastrales'), # partidos de baires
+                GNA %in% c('Partido', 'Comuna')) |> # elimino prov de san juan
+  dplyr::select('partido' = NAM, geometry) |>
+  sf::st_zm()
+
+# Lo paso a poligono para eliminar el extra en San Fernando
+bsas = st_cast(bsas,"POLYGON")
+
+# Chequeo el numero de poligono que quiero eliminar
+ggplot() +
+  geom_sf(data = bsas$geometry[126])+
+  theme_minimal()
+
+# Elimino el poligono extra
+bsas <- bsas[-126,]
+
+# Mapa final
+ggplot() +
+  geom_sf(data = bsas)+
+  theme_minimal()
+
+write_sf(bsas, 'data/procesada/bsas.gpkg')
+```
+
+### Unifico las comunas
+
+```{r}
+
+  # uno las comunas
+  caba <-  bsas[grep("Comuna", bsas$partido), ] |>
+           st_union()
+
+  # aca podria agregar algun tipo de control de calidad para asegurarme que
+  # tengo la cantidad de comunas que son
+  # chequear que tenga proyeccion
+
+
+  # las reemplazo en el dataset por caba
+ bsas_caba <-  bsas |>
+    slice(-grep("Comuna", bsas$partido)) |>
+    rbind(st_sf(
+                geometry = caba,
+                partido = 'Capital Federal'
+    ))
+
+
+
+ ggplot() +
+        geom_sf(data = subset(bsas_caba,
+                              partido == 'Capital Federal')) + 
+        theme_minimal()
+
+write_sf(bsas_caba, 'data/procesada/bsas_caba.gpkg')
+```
+
+### Simplifico los poligonos para agilizar la app
+
+```{r}
+bsas_caba <- st_read('data/procesada/bsas_caba.gpkg')
+
+# Es posible emplear la funcion st_simplify para esto mismo, pero no conserva
+# tan bien la topografia entre los poligonos, es por ello que uso este paquete
+# donde se aplica el algoritmo de Visvalingam
+
+library(rmapshaper)
+bsas_caba_simple <- rmapshaper::ms_simplify(bsas_caba)
+
+st_write(bsas_caba_simple, "data/procesada/bsas_caba_simple.gpkg", append=FALSE)
+
+
+```
+
+
+### Calculo de centroides
+
+```{r}
+
+cent <- bsas_caba_simple |> 
+  st_point_on_surface()
+
+# guardo el archivo con los vectores de partidos de provincia de Buenos Aires
+
+ggplot() +
+  geom_sf(data = bsas_caba)+
+  geom_sf(data = cent) +
+  theme_minimal()
+
+# guardo los centroides
+st_write(cent, "data/procesada/centroides_mapa.gpkg", append=FALSE)
+
+
+```
+
+
+
+
+

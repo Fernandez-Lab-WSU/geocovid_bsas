@@ -1,0 +1,32 @@
+{
+    "id": "0B672857",
+    "path": "~/geocovid_bsas/analisis_datos_covid.qmd",
+    "project_path": "analisis_datos_covid.qmd",
+    "type": "quarto_markdown",
+    "hash": "1265427614",
+    "contents": "",
+    "dirty": false,
+    "created": 1702071223918.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "rmdVisualMode": "false",
+        "rmdVisualWrapConfigured": "true",
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "docOutlineVisible": "1",
+        "rmdVisualCollapsedChunks": "",
+        "cursorPosition": "0,0",
+        "scrollLine": "0",
+        "rmdVisualModeLocation": "45:0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1702071241,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1702071241455,
+    "read_only": false,
+    "read_only_alternatives": []
+}

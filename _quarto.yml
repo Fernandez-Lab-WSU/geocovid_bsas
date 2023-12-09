@@ -1,0 +1,24 @@
+project:
+  type: website
+
+website:
+  title: "GeoCovid Buenos Aires"
+  navbar:
+    left:
+      - href: index.qmd
+        text: LEEME
+      - text: "Archivos del proyecto"
+        menu:
+          - creacion_mapa_bsas.qmd
+          - analisis_datos_covid.qmd
+          - creacion_de_rasters.qmd
+          - calculo_movilidad_por_departamento.qmd
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+
+

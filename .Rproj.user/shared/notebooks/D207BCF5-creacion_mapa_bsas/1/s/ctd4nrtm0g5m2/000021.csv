@@ -1,0 +1,8 @@
+"0",""
+"0","# Elimino el poligono extra"
+"0","bsas <- bsas[-126,]"
+"0",""
+"0","# Mapa final"
+"0","ggplot() +"
+"0","  geom_sf(data = bsas)+"
+"0","  theme_minimal()"

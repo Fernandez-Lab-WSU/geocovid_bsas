@@ -1,0 +1,8 @@
+"0",""
+"0","# Lo paso a poligono para eliminar el extra"
+"0","amba_reducido = st_cast(amba_reducido,""POLYGON"")"
+"2","Warning: repeating attributes for all sub-geometries for which they may not be constant"
+"0","# Chequeo que se cual quiero eliminar"
+"0","ggplot() +"
+"0","  geom_sf(data = amba_reducido$geom[30])+"
+"0","  theme_minimal()"
