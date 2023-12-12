@@ -125,7 +125,9 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#código" id="toc-código" class="nav-link active" data-scroll-target="#código">Código</a></li>
-  <li><a href="#links" id="toc-links" class="nav-link" data-scroll-target="#links">Links</a></li>
+  <li><a href="#proyectos-relacionados" id="toc-proyectos-relacionados" class="nav-link" data-scroll-target="#proyectos-relacionados">Proyectos relacionados</a></li>
+  <li><a href="#licencias" id="toc-licencias" class="nav-link" data-scroll-target="#licencias">Licencias</a></li>
+  <li><a href="#código-de-conducta" id="toc-código-de-conducta" class="nav-link" data-scroll-target="#código-de-conducta">Código de Conducta</a></li>
   </ul>
 </nav>
     </div>
@@ -149,31 +151,61 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>Este repositorio guarda los análisis realizados para la creación de los datos visualizados en GeoCovid app</p>
+<p><img src="imagenes/geocovid_bsas_logo.png" align="right" height="150"></p>
+<p>Este repositorio contiene cuatro archivos que recopilan los análisis realizados y el procesamiento de datos necesario para la creacion de GeoCovid app.</p>
+<p>GeoCovid app se concentra en datos de COVID-19 y de movilidad ciudadana dentro de provincia de Buenos Aires.</p>
 <section id="código" class="level2">
 <h2 class="anchored" data-anchor-id="código">Código</h2>
 <section id="creación-de-los-mapas-vectoriales-de-buenos-aires-y-sus-centroides" class="level4">
 <h4 class="anchored" data-anchor-id="creación-de-los-mapas-vectoriales-de-buenos-aires-y-sus-centroides">1. Creación de los mapas vectoriales de Buenos Aires y sus centroides</h4>
-<p>Estos datos fueron extraidos de x</p>
+<ul>
+<li>Los mapas de las comunas de Ciudad Autónoma de Buenos Aires fueron descargados de <a href="https://data.buenosaires.gob.ar/dataset/comunas/resource/Juqdkmgo-612222-resource">BA Data</a>, mientras que los poligonos correspondientes a los partidos de provincia de Buenos Aires se descargaron del <a href="https://www.ign.gob.ar/NuestrasActividades/InformacionGeoespacial/CapasSIG">Instituto Geográfico Nacional Argentino</a>.</li>
+</ul>
 </section>
-<section id="análisis-exploratorio-de-la-base-de-datos-de-casos-de-covid-19" class="level4">
-<h4 class="anchored" data-anchor-id="análisis-exploratorio-de-la-base-de-datos-de-casos-de-covid-19">2. Análisis exploratorio de la base de datos de casos de COVID-19</h4>
-<p>para prov. de Buenos Aires y creacion de variables de interés para la aplicación.</p>
-<p>Los datos…</p>
+<section id="análisis-de-la-base-de-datos-de-casos-de-covid-19" class="level4">
+<h4 class="anchored" data-anchor-id="análisis-de-la-base-de-datos-de-casos-de-covid-19">2. Análisis de la base de datos de casos de COVID-19</h4>
+<ul>
+<li><p>Se analizaron unicamente datos para prov. de Buenos Aires.</p></li>
+<li><p>Se crean nuevas variables para su uso en <a href="https://github.com/Fernandez-Lab-WSU/geocovid_app">GeoCovid app</a>.</p></li>
+<li><p>Archivo historico de casos de COVID-19 registrados desde el 01/03/2020 hasta el 04/06/2022 - <a href="https://datos.gob.ar/dataset/salud-covid-19-casos-registrados-republica-argentina/archivo/salud_fd657d02-a33a-498b-a91b-2ef1a68b8d16">Dirección Nacional de Epidemiología y Análisis de Situación de Salud</a>.<br>
+Estos datos son públicos y fueron consultados en Julio de 2023 en <a href="http://datos.salud.gob.ar/dataset/covid-19-casos-registrados-en-la-republica-argentina">www.datos.salud.gob.ar</a>.</p></li>
+</ul>
 </section>
 <section id="creación-de-imagenes-raster" class="level4">
 <h4 class="anchored" data-anchor-id="creación-de-imagenes-raster">3. Creación de imagenes raster</h4>
+<ul>
+<li><p>Los datos de movilidad ciudadana fueron brindados por <a href="https://dataforgood.facebook.com/">Data for Good - Meta</a></p></li>
+<li><p>El procesamiento de los datos y la generacion de los rasters fue realizado usando el <a href="https://github.com/Fernandez-Lab-WSU/quadkeyr">paquete <code>quadkeyr</code></a>.</p></li>
+</ul>
 </section>
 <section id="cálculo-de-la-movilidad-porcentual-por-departamento-de-prov.-de-bs.as." class="level4">
 <h4 class="anchored" data-anchor-id="cálculo-de-la-movilidad-porcentual-por-departamento-de-prov.-de-bs.as.">4. Cálculo de la movilidad porcentual por departamento de prov. de Bs.As.</h4>
-</section>
-</section>
-<section id="links" class="level2">
-<h2 class="anchored" data-anchor-id="links">Links</h2>
 <ul>
-<li><code>quadkeyr</code></li>
-<li>Gocovid app</li>
+<li>Los datos de movilidad ciudadana fueron brindados por <a href="https://dataforgood.facebook.com/">Data for Good - Meta</a> y se promediaron para los mapas vectoriales de prov. de Buenos Aires mencionados en el punto 1.</li>
 </ul>
+</section>
+</section>
+<section id="proyectos-relacionados" class="level2">
+<h2 class="anchored" data-anchor-id="proyectos-relacionados">Proyectos relacionados</h2>
+<p>El paquete <code>quadkeyr</code>, GeoCovid Buenos Aires y GeoCovid App son parte del mismo proyecto.</p>
+<ul>
+<li><p><a href="https://github.com/Fernandez-Lab-WSU/quadkeyr">Paquete <code>quadkeyr</code></a> Permite el analisis de datos de movilidad ciudadana de Meta y su conversión a imagenes raster.</p></li>
+<li><p><a href="https://github.com/Fernandez-Lab-WSU/geocovid_app">GeoCovid app</a> Dashboard que permite la visualización de datos de COVID-19 y movilidad ciudadana en conjunto.</p></li>
+</ul>
+</section>
+<section id="licencias" class="level2">
+<h2 class="anchored" data-anchor-id="licencias">Licencias</h2>
+<ul>
+<li>El código contenido en este repositorio se encuentra bajo una <a href="">licencia MIT</a>.</li>
+<li>El informe contenido en este documento es compartido bajo una licencia <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es">Atribución-NoComercial-CompartirIgual 4.0 Internacional</a>. Consulte el archivo de licencia para obtener más información. Si reutiliza información de este reporte proporcione la atribución y el enlace a esta página web empleando esta cita:</li>
+</ul>
+<blockquote class="blockquote">
+<p>TBD</p>
+</blockquote>
+</section>
+<section id="código-de-conducta" class="level2">
+<h2 class="anchored" data-anchor-id="código-de-conducta">Código de Conducta</h2>
+<p>El proyecto GeoCovid Buenos Aires, GeoCovid app y el paquete <code>quadkeyr</code> se encuentran bajo un <a href="https://www.contributor-covenant.org/es/version/1/4/code-of-conduct/">Código de Conducta</a>.</p>
 
 
 </section>

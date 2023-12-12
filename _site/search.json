@@ -4,28 +4,35 @@
     "href": "index.html",
     "title": "GeoCovid Buenos Aires",
     "section": "",
-    "text": "Este repositorio guarda los análisis realizados para la creación de los datos visualizados en GeoCovid app"
+    "text": "Este repositorio contiene cuatro archivos que recopilan los análisis realizados y el procesamiento de datos necesario para la creacion de GeoCovid app.\nGeoCovid app se concentra en datos de COVID-19 y de movilidad ciudadana dentro de provincia de Buenos Aires."
   },
   {
     "objectID": "index.html#código",
     "href": "index.html#código",
     "title": "GeoCovid Buenos Aires",
     "section": "Código",
-    "text": "Código\n\n1. Creación de los mapas vectoriales de Buenos Aires y sus centroides\nEstos datos fueron extraidos de x\n\n\n2. Análisis exploratorio de la base de datos de casos de COVID-19\npara prov. de Buenos Aires y creacion de variables de interés para la aplicación.\nLos datos…\n\n\n3. Creación de imagenes raster\n\n\n4. Cálculo de la movilidad porcentual por departamento de prov. de Bs.As."
+    "text": "Código\n\n1. Creación de los mapas vectoriales de Buenos Aires y sus centroides\n\nLos mapas de las comunas de Ciudad Autónoma de Buenos Aires fueron descargados de BA Data, mientras que los poligonos correspondientes a los partidos de provincia de Buenos Aires se descargaron del Instituto Geográfico Nacional Argentino.\n\n\n\n2. Análisis de la base de datos de casos de COVID-19\n\nSe analizaron unicamente datos para prov. de Buenos Aires.\nSe crean nuevas variables para su uso en GeoCovid app.\nArchivo historico de casos de COVID-19 registrados desde el 01/03/2020 hasta el 04/06/2022 - Dirección Nacional de Epidemiología y Análisis de Situación de Salud.\nEstos datos son públicos y fueron consultados en Julio de 2023 en www.datos.salud.gob.ar.\n\n\n\n3. Creación de imagenes raster\n\nLos datos de movilidad ciudadana fueron brindados por Data for Good - Meta\nEl procesamiento de los datos y la generacion de los rasters fue realizado usando el paquete quadkeyr.\n\n\n\n4. Cálculo de la movilidad porcentual por departamento de prov. de Bs.As.\n\nLos datos de movilidad ciudadana fueron brindados por Data for Good - Meta y se promediaron para los mapas vectoriales de prov. de Buenos Aires mencionados en el punto 1."
   },
   {
-    "objectID": "index.html#links",
-    "href": "index.html#links",
+    "objectID": "index.html#proyectos-relacionados",
+    "href": "index.html#proyectos-relacionados",
     "title": "GeoCovid Buenos Aires",
-    "section": "Links",
-    "text": "Links\n\nquadkeyr\nGocovid app"
+    "section": "Proyectos relacionados",
+    "text": "Proyectos relacionados\nEl paquete quadkeyr, GeoCovid Buenos Aires y GeoCovid App son parte del mismo proyecto.\n\nPaquete quadkeyr Permite el analisis de datos de movilidad ciudadana de Meta y su conversión a imagenes raster.\nGeoCovid app Dashboard que permite la visualización de datos de COVID-19 y movilidad ciudadana en conjunto."
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site"
+    "objectID": "index.html#licencias",
+    "href": "index.html#licencias",
+    "title": "GeoCovid Buenos Aires",
+    "section": "Licencias",
+    "text": "Licencias\n\nEl código contenido en este repositorio se encuentra bajo una licencia MIT.\nEl informe contenido en este documento es compartido bajo una licencia Atribución-NoComercial-CompartirIgual 4.0 Internacional. Consulte el archivo de licencia para obtener más información. Si reutiliza información de este reporte proporcione la atribución y el enlace a esta página web empleando esta cita:\n\n\nTBD"
+  },
+  {
+    "objectID": "index.html#código-de-conducta",
+    "href": "index.html#código-de-conducta",
+    "title": "GeoCovid Buenos Aires",
+    "section": "Código de Conducta",
+    "text": "Código de Conducta\nEl proyecto GeoCovid Buenos Aires, GeoCovid app y el paquete quadkeyr se encuentran bajo un Código de Conducta."
   },
   {
     "objectID": "creacion_mapa_bsas.html",
@@ -33,5 +40,68 @@
     "title": "Creación Mapas Buenos Aires",
     "section": "",
     "text": "library(tidyverse)\n\n── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n✔ dplyr     1.1.2     ✔ readr     2.1.4\n✔ forcats   1.0.0     ✔ stringr   1.5.0\n✔ ggplot2   3.4.3     ✔ tibble    3.2.1\n✔ lubridate 1.9.2     ✔ tidyr     1.3.0\n✔ purrr     1.0.1     \n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\nℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors\n\nlibrary(stringr)\nlibrary(sf)\n\nLinking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE\n\n# El amba consta de 40 municipios mas ciudad de buenos aires\n# fuente: https://www.argentina.gob.ar/dami/centro/amba\n# Vamos a hacer una seleccion de amba con menos partidos\n\n# Lista de los partidos que vamos a considerar AMBA incluyendo comunas CABA\namba_reducido_names &lt;- c('Almirante Brown',\n                         'Avellaneda',\n                         'Berazategui',\n                         paste('Comuna', 1:15), # CABA\n                         'Esteban Echeverría', 'Escobar', 'Ezeiza',\n                         'Florencio Varela',\n                         'General San Martín',\n                         'Hurlingham',\n                         'Ituzaingó',\n                         'José C. Paz',\n                         'La Matanza',  'Lanús', 'Lomas de Zamora',\n                         'Malvinas Argentinas', 'Merlo', 'Moreno', 'Morón',\n                         'Quilmes', 'Pilar', 'Presidente Perón',\n                         'San Fernando', 'San Isidro', 'San Miguel',\n                         'Tigre', 'Tres de Febrero',\n                         'Vicente López')\n\n\nArea Metropolitana de Buenos Aires (AMBA) y Ciudad Autonoma de Buenos Aires (CABA)\n\n# Estos shapefiles fueron extraidos del Instituto Geografico Nacional (IGN)\n\namba &lt;- st_read(\"data/inicial/departamentos.shp\") |&gt;\n  st_zm() |&gt;\n  filter(str_detect(NAM, paste(amba_reducido_names, collapse = \"|\")),\n         SAG %in% c('ARBA - Gerencia de Servicios Catastrales',\n                    'Direc. de Catastro'))\n\nReading layer `departamentos' from data source \n  `/Users/florenciadandrea/geocovid_bsas/data/inicial/departamentos.shp' \n  using driver `ESRI Shapefile'\nSimple feature collection with 529 features and 10 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY, XYZ\nBounding box:  xmin: -74 ymin: -90 xmax: -25 ymax: -21.78113\nz_range:       zmin: 0 zmax: 0\nGeodetic CRS:  WGS 84\n\n# Chequeo el resultado visualmente\namba_reducido &lt;- amba |&gt;\n  dplyr::select('partido' = NAM , geometry) |&gt;\n  dplyr::filter(partido %in% amba_reducido_names)\n\nggplot() +\n  geom_sf(data = amba_reducido)+\n  theme_minimal()\n\n\n\n\n\nRemuevo poligonos duplicados\n\n# Vemos que San Fernando esta compuesto por dos poligonos,\n# Uno es el delta, y deberiamos eliminarlo\n\nggplot() +\n  geom_sf(data = subset(amba_reducido,\n                        partido == 'San Fernando'))+\n  theme_minimal()\n\n\n\n# Lo paso a poligono para eliminar el extra\namba_reducido = st_cast(amba_reducido,\"POLYGON\")\n\nWarning in st_cast.sf(amba_reducido, \"POLYGON\"): repeating attributes for all\nsub-geometries for which they may not be constant\n\n# Chequeo que se cual quiero eliminar\nggplot() +\n  geom_sf(data = amba_reducido$geom[30])+\n  theme_minimal()\n\n\n\n# Elimino el poligono extra\namba_reducido &lt;- amba_reducido[-30,]\n\n# Archivo vectorial final de AMBA\nggplot() +\n  geom_sf(data = amba_reducido)+\n  theme_minimal()\n\n\n\n\nEste es el archivo con los poligonos finales seleccionados para AMBA\n\n## guardo el archivo\n\nst_write(amba, \"data/procesada/amba_ampliado.gpkg\", append = FALSE)\n\nDeleting layer `amba_ampliado' using driver `GPKG'\nWriting layer `amba_ampliado' to data source \n  `data/procesada/amba_ampliado.gpkg' using driver `GPKG'\nWriting 42 features with 10 fields and geometry type Multi Polygon.\n\n\n\n\n\nProvincia de Buenos Aires\n\n# Obtengo los poligonos desde el IGN\nbsas &lt;- sf::st_read('data/inicial/departamentos.shp') |&gt;\n  dplyr::filter(SAG %in% c('Direc. de Catastro', # comunas\n                           'ARBA - Gerencia de Servicios Catastrales'), # partidos de baires\n                GNA %in% c('Partido', 'Comuna')) |&gt; # elimino prov de san juan\n  dplyr::select('partido' = NAM, geometry) |&gt;\n  sf::st_zm()\n\nReading layer `departamentos' from data source \n  `/Users/florenciadandrea/geocovid_bsas/data/inicial/departamentos.shp' \n  using driver `ESRI Shapefile'\nSimple feature collection with 529 features and 10 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY, XYZ\nBounding box:  xmin: -74 ymin: -90 xmax: -25 ymax: -21.78113\nz_range:       zmin: 0 zmax: 0\nGeodetic CRS:  WGS 84\n\n# Lo paso a poligono para eliminar el extra en San Fernando\nbsas = st_cast(bsas,\"POLYGON\")\n\nWarning in st_cast.sf(bsas, \"POLYGON\"): repeating attributes for all\nsub-geometries for which they may not be constant\n\n# Chequeo el numero de poligono que quiero eliminar\nggplot() +\n  geom_sf(data = bsas$geometry[126])+\n  theme_minimal()\n\n\n\n# Elimino el poligono extra\nbsas &lt;- bsas[-126,]\n\n# Mapa final\nggplot() +\n  geom_sf(data = bsas)+\n  theme_minimal()\n\n\n\nwrite_sf(bsas, 'data/procesada/bsas.gpkg')\n\n\nUnifico las comunas\n\n  # uno las comunas\n  caba &lt;-  bsas[grep(\"Comuna\", bsas$partido), ] |&gt;\n           st_union()\n\n  # aca podria agregar algun tipo de control de calidad para asegurarme que\n  # tengo la cantidad de comunas que son\n  # chequear que tenga proyeccion\n\n\n  # las reemplazo en el dataset por caba\n bsas_caba &lt;-  bsas |&gt;\n    slice(-grep(\"Comuna\", bsas$partido)) |&gt;\n    rbind(st_sf(\n                geometry = caba,\n                partido = 'Capital Federal'\n    ))\n\n\n\n ggplot() +\n        geom_sf(data = subset(bsas_caba,\n                              partido == 'Capital Federal')) + \n        theme_minimal()\n\n\n\nwrite_sf(bsas_caba, 'data/procesada/bsas_caba.gpkg')\n\n\n\nSimplifico los poligonos para agilizar la app\n\nbsas_caba &lt;- st_read('data/procesada/bsas_caba.gpkg')\n\nReading layer `bsas_caba' from data source \n  `/Users/florenciadandrea/geocovid_bsas/data/procesada/bsas_caba.gpkg' \n  using driver `GPKG'\nSimple feature collection with 136 features and 1 field\nGeometry type: POLYGON\nDimension:     XY\nBounding box:  xmin: -63.38597 ymin: -41.03791 xmax: -56.66499 ymax: -33.26185\nGeodetic CRS:  WGS 84\n\n# Es posible emplear la funcion st_simplify para esto mismo, pero no conserva\n# tan bien la topografia entre los poligonos, es por ello que uso este paquete\n# donde se aplica el algoritmo de Visvalingam\n\nlibrary(rmapshaper)\nbsas_caba_simple &lt;- rmapshaper::ms_simplify(bsas_caba)\n\nst_write(bsas_caba_simple, \"data/procesada/bsas_caba_simple.gpkg\", append=FALSE)\n\nDeleting layer `bsas_caba_simple' using driver `GPKG'\nWriting layer `bsas_caba_simple' to data source \n  `data/procesada/bsas_caba_simple.gpkg' using driver `GPKG'\nWriting 136 features with 1 fields and geometry type Polygon.\n\n\n\n\nCalculo de centroides\n\ncent &lt;- bsas_caba_simple |&gt; \n  st_point_on_surface()\n\nWarning: st_point_on_surface assumes attributes are constant over geometries\n\n\nWarning in st_point_on_surface.sfc(st_geometry(x)): st_point_on_surface may not\ngive correct results for longitude/latitude data\n\n# guardo el archivo con los vectores de partidos de provincia de Buenos Aires\n\nggplot() +\n  geom_sf(data = bsas_caba)+\n  geom_sf(data = cent) +\n  theme_minimal()\n\n\n\n# guardo los centroides\nst_write(cent, \"data/procesada/centroides_mapa.gpkg\", append=FALSE)\n\nDeleting layer `centroides_mapa' using driver `GPKG'\nWriting layer `centroides_mapa' to data source \n  `data/procesada/centroides_mapa.gpkg' using driver `GPKG'\nWriting 136 features with 1 fields and geometry type Point."
+  },
+  {
+    "objectID": "LICENSE.html",
+    "href": "LICENSE.html",
+    "title": "MIT License",
+    "section": "",
+    "text": "MIT License\nCopyright (c) 2023 geocovid_bsas authors\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\nTHE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+  },
+  {
+    "objectID": "CODIGO_DE_CONDUCTA.html",
+    "href": "CODIGO_DE_CONDUCTA.html",
+    "title": "Código de Conducta convenido para Contribuyentes",
+    "section": "",
+    "text": "En el interés de fomentar una comunidad abierta y acogedora, nosotros como contribuyentes y administradores nos comprometemos a hacer de la participación en nuestro proyecto y nuestra comunidad una experiencia libre de acoso para todos, independientemente de la edad, dimensión corporal, discapacidad, etnia, identidad y expresión de género, nivel de experiencia, nacionalidad, apariencia física, raza, religión, identidad u orientación sexual.\n\n\n\nEjemplos de comportamiento que contribuyen a crear un ambiente positivo:\n\nUso de lenguaje amable e inclusivo\nRespeto a diferentes puntos de vista y experiencias\nAceptación de críticas constructivas\nEnfocarse en lo que es mejor para la comunidad\nMostrar empatía a otros miembros de la comunidad\n\n\n\n\n\nUso de lenguaje o imágenes sexuales y atención sexual no deseada\nComentarios insultantes o despectivos (trolling) y ataques personales o políticos\nAcoso público o privado\nPublicación de información privada de terceros sin su consentimiento, como direcciones físicas o electrónicas\nOtros tipos de conducta que pudieran considerarse inapropiadas en un entorno profesional.\n\n\n\n\nLos administradores del proyecto son responsables de clarificar los estándares de comportamiento aceptable y se espera que tomen medidas correctivas y apropiadas en respuesta a situaciones de conducta inaceptable. Los administradores del proyecto tienen el derecho y la responsabilidad de eliminar, editar o rechazar comentarios, commits, código, ediciones de documentación, issues, y otras contribuciones que no estén alineadas con este Código de Conducta, o de prohibir temporal o permanentemente a cualquier colaborador cuyo comportamiento sea inapropiado, amenazante, ofensivo o perjudicial.\n\n\n\nEste código de conducta aplica tanto a espacios del proyecto como a espacios públicos donde un individuo esté en representación del proyecto o comunidad. Ejemplos de esto incluye el uso de la cuenta oficial de correo electrónico, publicaciones a través de las redes sociales oficiales, o presentaciones con personas designadas en eventos online u offline. La representación del proyecto puede ser clarificada explicitamente por los administradores del proyecto.\n\n\n\nEjemplos de abuso, acoso u otro tipo de comportamiento inaceptable puede ser reportado al equipo del proyecto en florencia.dandrea@gmail.com. Todas las quejas serán revisadas e investigadas, generando un resultado apropiado a las circunstancias. El equipo del proyecto está obligado a mantener confidencialidad de la persona que reportó el incidente. Detalles específicos acerca de las políticas de aplicación pueden ser publicadas por separado. Administradores que no sigan o que no hagan cumplir este Código de Conducta pueden ser eliminados de forma temporal o permanente del equipo administrador.\n\n\n\nEste Código de Conducta es una adaptación del Contributor Covenant, versión 1.4, disponible en https://www.contributor-covenant.org/es/version/1/4/code-of-conduct.html"
+  },
+  {
+    "objectID": "CODIGO_DE_CONDUCTA.html#nuestro-compromiso",
+    "href": "CODIGO_DE_CONDUCTA.html#nuestro-compromiso",
+    "title": "Código de Conducta convenido para Contribuyentes",
+    "section": "",
+    "text": "En el interés de fomentar una comunidad abierta y acogedora, nosotros como contribuyentes y administradores nos comprometemos a hacer de la participación en nuestro proyecto y nuestra comunidad una experiencia libre de acoso para todos, independientemente de la edad, dimensión corporal, discapacidad, etnia, identidad y expresión de género, nivel de experiencia, nacionalidad, apariencia física, raza, religión, identidad u orientación sexual."
+  },
+  {
+    "objectID": "CODIGO_DE_CONDUCTA.html#nuestros-estándares",
+    "href": "CODIGO_DE_CONDUCTA.html#nuestros-estándares",
+    "title": "Código de Conducta convenido para Contribuyentes",
+    "section": "",
+    "text": "Ejemplos de comportamiento que contribuyen a crear un ambiente positivo:\n\nUso de lenguaje amable e inclusivo\nRespeto a diferentes puntos de vista y experiencias\nAceptación de críticas constructivas\nEnfocarse en lo que es mejor para la comunidad\nMostrar empatía a otros miembros de la comunidad"
+  },
+  {
+    "objectID": "CODIGO_DE_CONDUCTA.html#ejemplos-de-comportamiento-inaceptable-por-participantes",
+    "href": "CODIGO_DE_CONDUCTA.html#ejemplos-de-comportamiento-inaceptable-por-participantes",
+    "title": "Código de Conducta convenido para Contribuyentes",
+    "section": "",
+    "text": "Uso de lenguaje o imágenes sexuales y atención sexual no deseada\nComentarios insultantes o despectivos (trolling) y ataques personales o políticos\nAcoso público o privado\nPublicación de información privada de terceros sin su consentimiento, como direcciones físicas o electrónicas\nOtros tipos de conducta que pudieran considerarse inapropiadas en un entorno profesional."
+  },
+  {
+    "objectID": "CODIGO_DE_CONDUCTA.html#nuestras-responsabilidades",
+    "href": "CODIGO_DE_CONDUCTA.html#nuestras-responsabilidades",
+    "title": "Código de Conducta convenido para Contribuyentes",
+    "section": "",
+    "text": "Los administradores del proyecto son responsables de clarificar los estándares de comportamiento aceptable y se espera que tomen medidas correctivas y apropiadas en respuesta a situaciones de conducta inaceptable. Los administradores del proyecto tienen el derecho y la responsabilidad de eliminar, editar o rechazar comentarios, commits, código, ediciones de documentación, issues, y otras contribuciones que no estén alineadas con este Código de Conducta, o de prohibir temporal o permanentemente a cualquier colaborador cuyo comportamiento sea inapropiado, amenazante, ofensivo o perjudicial."
+  },
+  {
+    "objectID": "CODIGO_DE_CONDUCTA.html#alcance",
+    "href": "CODIGO_DE_CONDUCTA.html#alcance",
+    "title": "Código de Conducta convenido para Contribuyentes",
+    "section": "",
+    "text": "Este código de conducta aplica tanto a espacios del proyecto como a espacios públicos donde un individuo esté en representación del proyecto o comunidad. Ejemplos de esto incluye el uso de la cuenta oficial de correo electrónico, publicaciones a través de las redes sociales oficiales, o presentaciones con personas designadas en eventos online u offline. La representación del proyecto puede ser clarificada explicitamente por los administradores del proyecto."
+  },
+  {
+    "objectID": "CODIGO_DE_CONDUCTA.html#aplicación",
+    "href": "CODIGO_DE_CONDUCTA.html#aplicación",
+    "title": "Código de Conducta convenido para Contribuyentes",
+    "section": "",
+    "text": "Ejemplos de abuso, acoso u otro tipo de comportamiento inaceptable puede ser reportado al equipo del proyecto en florencia.dandrea@gmail.com. Todas las quejas serán revisadas e investigadas, generando un resultado apropiado a las circunstancias. El equipo del proyecto está obligado a mantener confidencialidad de la persona que reportó el incidente. Detalles específicos acerca de las políticas de aplicación pueden ser publicadas por separado. Administradores que no sigan o que no hagan cumplir este Código de Conducta pueden ser eliminados de forma temporal o permanente del equipo administrador."
+  },
+  {
+    "objectID": "CODIGO_DE_CONDUCTA.html#atribución",
+    "href": "CODIGO_DE_CONDUCTA.html#atribución",
+    "title": "Código de Conducta convenido para Contribuyentes",
+    "section": "",
+    "text": "Este Código de Conducta es una adaptación del Contributor Covenant, versión 1.4, disponible en https://www.contributor-covenant.org/es/version/1/4/code-of-conduct.html"
   }
 ]

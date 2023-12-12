@@ -162,7 +162,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#remuevo-poligonos-duplicados" id="toc-remuevo-poligonos-duplicados" class="nav-link" data-scroll-target="#remuevo-poligonos-duplicados">Remuevo poligonos duplicados</a></li>
   </ul></li>
-  <li><a href="#provincia-de-buenos-aires" id="toc-provincia-de-buenos-aires" class="nav-link" data-scroll-target="#provincia-de-buenos-aires">Provincia de Buenos Aires</a></li>
+  <li><a href="#provincia-de-buenos-aires" id="toc-provincia-de-buenos-aires" class="nav-link" data-scroll-target="#provincia-de-buenos-aires">Provincia de Buenos Aires</a>
+  <ul class="collapse">
+  <li><a href="#unifico-las-comunas" id="toc-unifico-las-comunas" class="nav-link" data-scroll-target="#unifico-las-comunas">Unifico las comunas</a></li>
+  <li><a href="#simplifico-los-poligonos-para-agilizar-la-app" id="toc-simplifico-los-poligonos-para-agilizar-la-app" class="nav-link" data-scroll-target="#simplifico-los-poligonos-para-agilizar-la-app">Simplifico los poligonos para agilizar la app</a></li>
+  <li><a href="#calculo-de-centroides" id="toc-calculo-de-centroides" class="nav-link" data-scroll-target="#calculo-de-centroides">Calculo de centroides</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -357,8 +362,8 @@ sub-geometries for which they may not be constant</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_sf</span>(bsas, <span class="st">'data/procesada/bsas.gpkg'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="unifico-las-comunas" class="level4">
-<h4 class="anchored" data-anchor-id="unifico-las-comunas">Unifico las comunas</h4>
+<section id="unifico-las-comunas" class="level3">
+<h3 class="anchored" data-anchor-id="unifico-las-comunas">Unifico las comunas</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>  <span class="co"># uno las comunas</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  caba <span class="ot">&lt;-</span>  bsas[<span class="fu">grep</span>(<span class="st">"Comuna"</span>, bsas<span class="sc">$</span>partido), ] <span class="sc">|&gt;</span></span>
@@ -389,8 +394,8 @@ sub-geometries for which they may not be constant</code></pre>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_sf</span>(bsas_caba, <span class="st">'data/procesada/bsas_caba.gpkg'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="simplifico-los-poligonos-para-agilizar-la-app" class="level4">
-<h4 class="anchored" data-anchor-id="simplifico-los-poligonos-para-agilizar-la-app">Simplifico los poligonos para agilizar la app</h4>
+<section id="simplifico-los-poligonos-para-agilizar-la-app" class="level3">
+<h3 class="anchored" data-anchor-id="simplifico-los-poligonos-para-agilizar-la-app">Simplifico los poligonos para agilizar la app</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>bsas_caba <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">'data/procesada/bsas_caba.gpkg'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -419,8 +424,8 @@ Writing 136 features with 1 fields and geometry type Polygon.</code></pre>
 </div>
 </div>
 </section>
-<section id="calculo-de-centroides" class="level4">
-<h4 class="anchored" data-anchor-id="calculo-de-centroides">Calculo de centroides</h4>
+<section id="calculo-de-centroides" class="level3">
+<h3 class="anchored" data-anchor-id="calculo-de-centroides">Calculo de centroides</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>cent <span class="ot">&lt;-</span> bsas_caba_simple <span class="sc">|&gt;</span> </span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_point_on_surface</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
