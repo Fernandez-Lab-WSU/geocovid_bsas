@@ -1,0 +1,28 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: GeoCovid Buenos Aires
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Florencia
+    family-names: D'Andrea
+    email: florencia.dandrea@gmail.com
+    orcid: 'https://orcid.org/0000-0002-0041-097X'
+repository-code: 'https://github.com/Fernandez-Lab-WSU/geocovid_bsas'
+url: 'https://fernandez-lab-wsu.github.io/geocovid_bsas/'
+abstract: >-
+  Este repositorio contiene cuatro reportes que recopilan 
+  el procesamiento de los datos de COVID-19, movilidad 
+  ciudadana, mapas vectoriales e imágenes raster para 
+  provincia de Buenos Aires en el marco de la creación de   la aplicación GeoCovid app Buenos Aires
+keywords:
+  - buenos aires
+  - covid-19
+  - raster
+  - quadkey
+  - argentina
+license: CC-BY-4.0

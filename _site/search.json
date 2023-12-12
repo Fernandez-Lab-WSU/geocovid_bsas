@@ -32,14 +32,14 @@
     "href": "index.html",
     "title": "GeoCovid Buenos Aires",
     "section": "",
-    "text": "Este repositorio contiene cuatro archivos que recopilan los análisis realizados y el procesamiento de datos necesario para la creacion de GeoCovid app.\nGeoCovid app se concentra en datos de COVID-19 y de movilidad ciudadana dentro de provincia de Buenos Aires."
+    "text": "Este repositorio contiene cuatro reportes que recopilan el procesamiento de los datos de COVID-19, movilidad ciudadana, mapas vectoriales e imágenes raster para provincia de Buenos Aires en el marco de la creación de la aplicación GeoCovid app Buenos Aires."
   },
   {
-    "objectID": "index.html#código",
-    "href": "index.html#código",
+    "objectID": "index.html#reportes",
+    "href": "index.html#reportes",
     "title": "GeoCovid Buenos Aires",
-    "section": "Código",
-    "text": "Código\n\n1. Creación de los mapas vectoriales de Buenos Aires y sus centroides\n\nLos mapas de las comunas de Ciudad Autónoma de Buenos Aires fueron descargados de BA Data, mientras que los poligonos correspondientes a los partidos de provincia de Buenos Aires se descargaron del Instituto Geográfico Nacional Argentino.\n\n\n\n2. Análisis de la base de datos de casos de COVID-19\n\nSe analizaron unicamente datos para prov. de Buenos Aires.\nSe crean nuevas variables para su uso en GeoCovid app.\nArchivo historico de casos de COVID-19 registrados desde el 01/03/2020 hasta el 04/06/2022 - Dirección Nacional de Epidemiología y Análisis de Situación de Salud.\nEstos datos son públicos y fueron consultados en Julio de 2023 en www.datos.salud.gob.ar.\n\n\n\n3. Creación de imagenes raster\n\nLos datos de movilidad ciudadana fueron brindados por Data for Good - Meta\nEl procesamiento de los datos y la generacion de los rasters fue realizado usando el paquete quadkeyr.\n\n\n\n4. Cálculo de la movilidad porcentual por departamento de prov. de Bs.As.\n\nLos datos de movilidad ciudadana fueron brindados por Data for Good - Meta y se promediaron para los mapas vectoriales de prov. de Buenos Aires mencionados en el punto 1."
+    "section": "Reportes",
+    "text": "Reportes\n\n1. Creación de los mapas vectoriales de Buenos Aires y sus centroides\n\nLos mapas de las comunas de Ciudad Autónoma de Buenos Aires fueron descargados de BA Data, mientras que los poligonos correspondientes a los partidos de provincia de Buenos Aires se descargaron del Instituto Geográfico Nacional Argentino.\n\n\n\n2. Análisis de la base de datos de casos de COVID-19\n\nSe analizaron unicamente datos para prov. de Buenos Aires.\nSe crean nuevas variables para su uso en GeoCovid app.\nArchivo historico de casos de COVID-19 registrados desde el 01/03/2020 hasta el 04/06/2022 - Dirección Nacional de Epidemiología y Análisis de Situación de Salud.\nEstos datos son públicos y fueron consultados en Julio de 2023 en www.datos.salud.gob.ar.\n\n\n\n3. Creación de imagenes raster\n\nLos datos de movilidad ciudadana fueron brindados por Data for Good - Meta\nEl procesamiento de los datos y la generacion de los rasters fue realizado usando el paquete quadkeyr.\n\n\n\n4. Cálculo de la movilidad porcentual por departamento de prov. de Bs.As.\n\nLos datos de movilidad ciudadana fueron brindados por Data for Good - Meta y se promediaron para los mapas vectoriales de prov. de Buenos Aires mencionados en el punto 1."
   },
   {
     "objectID": "index.html#proyectos-relacionados",

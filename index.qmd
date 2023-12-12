@@ -4,13 +4,12 @@ title: "GeoCovid Buenos Aires"
 
 <img src="imagenes/geocovid_bsas_logo.png" align="right" height="150" />
 
-Este repositorio contiene cuatro archivos que recopilan los análisis realizados
-y el procesamiento de datos necesario para la creacion de GeoCovid app.
+  Este repositorio contiene cuatro reportes que recopilan el procesamiento de 
+  los datos de COVID-19, movilidad ciudadana, mapas vectoriales e imágenes 
+  raster para provincia de Buenos Aires en el marco de la creación de 
+  la aplicación GeoCovid app Buenos Aires.
 
-GeoCovid app se concentra en datos de COVID-19 y de movilidad ciudadana dentro 
-de provincia de Buenos Aires.
-
-## Código
+## Reportes
 #### 1. Creación de los mapas vectoriales de Buenos Aires y sus centroides
 
 - Los mapas de las comunas de Ciudad Autónoma de Buenos Aires
