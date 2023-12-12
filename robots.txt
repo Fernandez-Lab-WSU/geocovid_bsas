@@ -1,0 +1,1 @@
+Sitemap: https://fernandez-lab-wsu.github.io/geocovid_bsas/sitemap.xml
