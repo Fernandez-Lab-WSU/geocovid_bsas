@@ -5,7 +5,7 @@
   Este repositorio contiene cuatro reportes que recopilan el procesamiento de 
   los datos de COVID-19, movilidad ciudadana, mapas vectoriales e imágenes 
   raster para provincia de Buenos Aires en el marco de la creación de 
-  la aplicación GeoCovid app Buenos Aires.
+  la aplicación GeoCovid app.
 
 ## Reportes
 #### 1. Creación de los mapas vectoriales de Buenos Aires y sus centroides
