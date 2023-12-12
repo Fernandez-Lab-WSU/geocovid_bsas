@@ -1,5 +1,7 @@
 # GeoCovid Buenos Aires <img src="imagenes/geocovid_bsas_logo.png" align="right" height="150" />
 
+[![Quarto Publish](https://github.com/Fernandez-Lab-WSU/geocovid_bsas/actions/workflows/publish.yaml/badge.svg)](https://github.com/Fernandez-Lab-WSU/geocovid_bsas/actions/workflows/publish.yaml)
+
   Este repositorio contiene cuatro reportes que recopilan el procesamiento de 
   los datos de COVID-19, movilidad ciudadana, mapas vectoriales e imágenes 
   raster para provincia de Buenos Aires en el marco de la creación de 
