@@ -12,13 +12,15 @@ authors:
     family-names: D'Andrea
     email: florencia.dandrea@gmail.com
     orcid: 'https://orcid.org/0000-0002-0041-097X'
+    affiliation: Dr. Fernandez Lab . Washington State University.
 repository-code: 'https://github.com/Fernandez-Lab-WSU/geocovid_bsas'
 url: 'https://fernandez-lab-wsu.github.io/geocovid_bsas/'
 abstract: >-
   Este repositorio contiene cuatro reportes que recopilan 
   el procesamiento de los datos de COVID-19, movilidad 
   ciudadana, mapas vectoriales e imágenes raster para 
-  provincia de Buenos Aires en el marco de la creación de   la aplicación GeoCovid app Buenos Aires
+  provincia de Buenos Aires en el marco de la creación de 
+  la aplicación GeoCovid app Buenos Aires
 keywords:
   - buenos aires
   - covid-19

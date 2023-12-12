@@ -5,7 +5,7 @@
   raster para provincia de Buenos Aires en el marco de la creación de 
   la aplicación GeoCovid app Buenos Aires.
 
-## Código
+## Reportes
 #### 1. Creación de los mapas vectoriales de Buenos Aires y sus centroides
 
 - Los mapas de las comunas de Ciudad Autónoma de Buenos Aires

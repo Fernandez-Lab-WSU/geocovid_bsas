@@ -13,7 +13,8 @@ title: "GeoCovid Buenos Aires"
 #### 1. Creación de los mapas vectoriales de Buenos Aires y sus centroides
 
 - Los mapas de las comunas de Ciudad Autónoma de Buenos Aires
-fueron descargados de [BA Data](https://data.buenosaires.gob.ar/dataset/comunas/resource/Juqdkmgo-612222-resource), mientras que los poligonos correspondientes a los
+fueron descargados de [BA Data](https://data.buenosaires.gob.ar/dataset/comunas/resource/Juqdkmgo-612222-resource), 
+mientras que los poligonos correspondientes a los
 partidos de provincia de Buenos Aires se descargaron
 del [Instituto Geográfico Nacional Argentino](https://www.ign.gob.ar/NuestrasActividades/InformacionGeoespacial/CapasSIG).
 
