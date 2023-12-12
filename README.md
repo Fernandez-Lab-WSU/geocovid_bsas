@@ -60,7 +60,9 @@ Consulte el archivo de licencia para obtener más información.
 Si reutiliza información de este reporte proporcione la atribución y el enlace
 a esta página web empleando esta cita:
 
-> TBD
+> D'Andrea, F. GeoCovid Buenos Aires [Computer software].
+> Dr. Fernandez Lab. Washington State University.
+> https://github.com/Fernandez-Lab-WSU/geocovid_bsas
 
 ## Código de Conducta
 
