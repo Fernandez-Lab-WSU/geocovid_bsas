@@ -3,12 +3,12 @@ project:
 
 website:
   title: "GeoCovid Buenos Aires"
-  favicon: "images/geocovid_bsas_favicon.png"
+  favicon: "imagenes/geocovid_bsas_favicon.png"
   site-url: https://fernandez-lab-wsu.github.io/geocovid_bsas/
   page-navigation: true
   navbar:
     search: true
-    logo: "images/geocovid_bsas_logo.png"
+    logo: "imagenes/geocovid_bsas_logo.png"
     left:
       - href: index.qmd
         text: LEEME

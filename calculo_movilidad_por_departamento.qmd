@@ -10,7 +10,225 @@ lang: es
 locación, dia y horario reportado generadas en 'Creacion de rasters'.
 
 **Objetivo**
-- Obtener los valores promedio de movilidad ciudadana para cada imagen raster
-expresados por departamento de provincia de Buenos Aires.
+- Obtener un dataset con los valores promedio de movilidad ciudadana tanto para 
+cambio porcentual semanal como prepandemia, en cada locación y momento en el
+que haya disponible una imagen raster.
+- Nueva variable que promedie los valores de cambio porcentual semanal como 
+prepandemia para mañana y tarde, ya que se asume que deberían ser similares.
 
 ---
+
+
+
+
+```{r setup, echo = FALSE, message=FALSE, warning=FALSE}
+library(sf)
+library(plotly)
+library(tidyverse)
+library(terra)
+```
+
+## 1. Guardo información de los rasters en un dataset 
+
+Genero una base de datos con los polígonos de los departamentos de provincia
+de Buenos Aires y la ubicación de los archivos en el sistema.
+
+```{r}
+
+# Leo todos los archivos de la carpeta
+all_files <- list.files("data/inicial/")
+
+# Filtro los archivos que terminan con '.tif'
+base_raster <- all_files[grep(".tif$",
+                              basename(all_files))]  |>
+  tibble::as_tibble() |>
+  tidyr::separate(value,
+                  into = c('locacion',
+                           'tipo_de_raster',
+                           'fecha',
+                           'hora'),
+                  sep = '_',
+                  remove = FALSE) |>
+  dplyr::mutate(fecha = as.Date(fecha),
+                hora = as.numeric(str_sub(hora, end= -4))) |>
+  dplyr::mutate(momento = dplyr::case_when(hora == 0 ~ "noche",
+                                           hora == 8 ~ "mañana",
+                                           hora == 16 ~ "tarde"))
+
+# Format the date to "YYYY-MM-DD" format
+formatted_date <- format("2020-05-10", format = "%Y-%m-%d")
+
+bsas <-  sf::st_read("data/procesada/bsas_caba_simple.gpkg")
+
+base_raster_baires <- base_raster |>
+  dplyr::filter(locacion == 'baires') |> #elimina valores de amba que coinciden
+  dplyr::cross_join(bsas) |>
+  dplyr::mutate(file = paste0('data/inicial/', value)) |>
+  sf::st_as_sf()
+
+```
+
+
+## 2. Promedio de valores de movilidad ciudadana por departamento de Bs. As.
+- Esto lo realizamos tanto para los rasters de 0 am (noche), 8 am (mañana) y
+tarde (4 pm).
+- Se crea una variable, `px_mean_dianoche`, que promedia los valores de
+mañana (8 am) y tarde (4 pm).
+
+```{r}
+
+px_baires <- c()
+
+for(i in 1:nrow(base_raster_baires)){
+
+
+  # cada fila corresponde a un partido diferente
+  poli <- sf::st_as_sf(base_raster_baires[i, c('partido','geom')]) |>
+    st_transform(3857)
+  
+  # si bien el raster va a ser el mismo en muchos casos
+  raster <- terra::rast(base_raster_baires$file[i])
+  crs(raster) <-  "epsg:3857"
+
+
+  int_data2 <- terra::extract( raster,
+                               sf::st_as_sf(poli),
+                               fun = mean,
+                               na.rm = TRUE)
+
+
+  px_data <- data.frame(base_raster_baires[i,],
+                        'px_mean' = int_data2[[2]] 
+                        )
+
+  px_baires <- rbind(px_data, px_baires)
+}
+
+px_baires_w <- px_baires |>
+  select(fecha, locacion, tipo_de_raster, 
+         momento, hora, partido, px_mean, geom) |>
+  pivot_wider(
+    names_from = c(momento, hora),
+    values_from = px_mean) |> # esto habria que
+  mutate(px_mean_dianoche = ((mañana_8 + tarde_16)/2))
+
+
+px_baires_w 
+
+```
+
+Las variables `px_mean_dianoche` y `noche_0` se convierten en categóricas.
+
+```{r}
+  px_bsas <-  px_baires_w  |>
+         dplyr::filter(fecha == '2020-05-06',
+                      tipo_de_raster == 'pc'
+                      ) |>
+         dplyr::mutate(criterio = case_when(px_mean_dianoche > 40 ~ "mas de 40",
+                                     40 > px_mean_dianoche &
+                                       px_mean_dianoche > 30 ~ "40 - 30",
+                                     30 > px_mean_dianoche &
+                                       px_mean_dianoche > 20 ~ "30 - 20",
+                                     20 > px_mean_dianoche &
+                                       px_mean_dianoche > 10 ~ "20 - 10",
+                                     10 > px_mean_dianoche & 
+                                       px_mean_dianoche > 1 ~ "10 - 1",
+                                     1 > px_mean_dianoche &
+                                       px_mean_dianoche> -1 ~ "sin cambios",
+                                     -1 > px_mean_dianoche& 
+                                       px_mean_dianoche > -10 ~ "-1 - -10",
+                                     -10 > px_mean_dianoche& 
+                                       px_mean_dianoche > -20 ~ "-10 - -20",
+                                     -20 > px_mean_dianoche& 
+                                       px_mean_dianoche > -30 ~ "-20 - -30",
+                                     -30 > px_mean_dianoche& 
+                                       px_mean_dianoche > -40 ~ "-30 - -40",
+                                     -40 > px_mean_dianoche  ~ "menor a -40"),
+         criterio_noche = case_when(noche_0 > 40 ~ "mas de 40",
+                                     40 > noche_0 &
+                                       noche_0 > 30 ~ "40 - 30",
+                                     30 > noche_0 &
+                                       noche_0 > 20 ~ "30 - 20",
+                                     20 > noche_0 &
+                                       noche_0 > 10 ~ "20 - 10",
+                                     10 > noche_0 &
+                                       noche_0 > 1 ~ "10 - 1",
+                                     1 > noche_0 &
+                                       noche_0> -1 ~ "sin cambios",
+                                     -1 > noche_0 &
+                                       noche_0 > -10 ~ "-1 - -10",
+                                     -10 > noche_0 &
+                                       noche_0 > -20 ~ "-10 - -20",
+                                     -20 > noche_0 &
+                                       noche_0 > -30 ~ "-20 - -30",
+                                     -30 > noche_0 &
+                                       noche_0 > -40 ~ "-30 - -40",
+                                     -40 > noche_0  ~ "menor a -40")) |>
+         dplyr::mutate(criterio = fct_relevel(criterio, c("mas de 40", 
+                                                   "40 - 30",
+                                                   "30 - 20",
+                                                   "20 - 10","10 - 1",
+                                                   "sin cambios",
+                                                   "-1 - -10", 
+                                                   "-10 - -20",
+                                                   "-20 - -30", 
+                                                   "-30 - -40",
+                                                   "menor a -40")),
+                criterio_noche = fct_relevel(criterio_noche, 
+                                             c("mas de 40", 
+                                                   "40 - 30",
+                                                   "30 - 20",
+                                                   "20 - 10",
+                                                   "10 - 1",
+                                                   "sin cambios",
+                                                   "-1 - -10", 
+                                                   "-10 - -20",
+                                                   "-20 - -30", 
+                                                   "-30 - -40",
+                                                   "menor a -40"))) |>
+  st_as_sf()
+
+```
+
+
+
+## 3. Mapa de provincia de Buenos Aires
+
+
+```{r warning=FALSE}
+
+
+# escala de color por categoria
+
+  colors <- c("mas de 40"="#67001F",
+              "40 - 30"="#B2182B",
+              "30 - 20"="#D6604D",
+              "20 - 10"="#F4A582",
+              "10 - 1"="#FDDBC7",
+              "sin cambios"="#F7F7F7",
+              "-1 - -10" ="#D1E5F0",
+              "-10 - -20"="#92C5DE",
+              "-20 - -30"="#4393C3",
+              "-30 - -40"="#2166AC",
+              "menor a -40"="#053061")
+
+
+ plotly::plot_ly() |>
+   plotly::add_sf(stroke = I("#95B2C6"),
+          data = px_bsas,
+          split = ~criterio,
+          name = ~criterio,
+          color = ~criterio,
+          colors = colors,
+          stroke = I("transparent"),
+          hoveron = "fills",
+          hoverinfo = 'name',
+          legendgroup = 'criterio',
+          legendgrouptitle = list(text = 'Promedio % de cambio',
+                                  font = list(size = 15,
+                                  family = "Work Sans",
+                                  color = "black"))
+   ) 
+ 
+```
+
