@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
 
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.3.433">
@@ -19,6 +19,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -48,18 +82,26 @@ ul.task-list li input[type="checkbox"] {
   "type": "overlay",
   "limit": 20,
   "language": {
-    "search-no-results-text": "No results",
-    "search-matching-documents-text": "matching documents",
-    "search-copy-link-title": "Copy link to search",
-    "search-hide-matches-text": "Hide additional matches",
-    "search-more-match-text": "more match in this document",
-    "search-more-matches-text": "more matches in this document",
-    "search-clear-button-title": "Clear",
-    "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit",
-    "search-label": "Search"
+    "search-no-results-text": "Sin resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
   }
 }</script>
+<script src="site_libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.10.3.9000/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="site_libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet">
+<script src="site_libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
 
 
 <link rel="stylesheet" href="styles.css">
@@ -79,8 +121,8 @@ ul.task-list li input[type="checkbox"] {
     <span class="navbar-title">GeoCovid Buenos Aires</span>
     </a>
   </div>
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+            <div id="quarto-search" class="" title="Buscar"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Navegación de palanca" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -124,7 +166,25 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En esta página</h2>
+   
+  <ul>
+  <li><a href="#carga-de-los-datos-y-análisis-inicial" id="toc-carga-de-los-datos-y-análisis-inicial" class="nav-link active" data-scroll-target="#carga-de-los-datos-y-análisis-inicial">Carga de los datos y análisis inicial</a>
+  <ul class="collapse">
+  <li><a href="#total-de-casos-de-cada-clasificación-para-caba-y-buenos-aires" id="toc-total-de-casos-de-cada-clasificación-para-caba-y-buenos-aires" class="nav-link" data-scroll-target="#total-de-casos-de-cada-clasificación-para-caba-y-buenos-aires">Total de casos de cada clasificación para CABA y Buenos Aires</a></li>
+  <li><a href="#distribución-de-nas-en-las-distintas-fechas-reportadas" id="toc-distribución-de-nas-en-las-distintas-fechas-reportadas" class="nav-link" data-scroll-target="#distribución-de-nas-en-las-distintas-fechas-reportadas">Distribución de NAs en las distintas fechas reportadas</a></li>
+  </ul></li>
+  <li><a href="#análisis-de-fecha_inicio_sintomas-y-fecha_diagnostico" id="toc-análisis-de-fecha_inicio_sintomas-y-fecha_diagnostico" class="nav-link" data-scroll-target="#análisis-de-fecha_inicio_sintomas-y-fecha_diagnostico">Análisis de <code>fecha_inicio_sintomas</code> y <code>fecha_diagnostico</code></a>
+  <ul class="collapse">
+  <li><a href="#caso-1-fecha-de-inicio-de-sintomas-y-fecha-de-diagnostico-no-reportadas" id="toc-caso-1-fecha-de-inicio-de-sintomas-y-fecha-de-diagnostico-no-reportadas" class="nav-link" data-scroll-target="#caso-1-fecha-de-inicio-de-sintomas-y-fecha-de-diagnostico-no-reportadas">CASO 1: fecha de inicio de sintomas y fecha de diagnostico no reportadas</a></li>
+  <li><a href="#caso-2-fecha-de-inicio-de-sintomas-reportada-y-fecha-de-diagnostico-ausente" id="toc-caso-2-fecha-de-inicio-de-sintomas-reportada-y-fecha-de-diagnostico-ausente" class="nav-link" data-scroll-target="#caso-2-fecha-de-inicio-de-sintomas-reportada-y-fecha-de-diagnostico-ausente">CASO 2: fecha de inicio de sintomas reportada y fecha de diagnostico ausente</a></li>
+  <li><a href="#caso-3-fecha-de-inicio-de-sintomas-ausente-y-fecha-de-diagnostico-reportada" id="toc-caso-3-fecha-de-inicio-de-sintomas-ausente-y-fecha-de-diagnostico-reportada" class="nav-link" data-scroll-target="#caso-3-fecha-de-inicio-de-sintomas-ausente-y-fecha-de-diagnostico-reportada">CASO 3: fecha de inicio de sintomas ausente y fecha de diagnostico reportada</a></li>
+  <li><a href="#caso-4-fecha-de-inicio-de-sintomas-y-fecha-de-diagnostico-reportadas" id="toc-caso-4-fecha-de-inicio-de-sintomas-y-fecha-de-diagnostico-reportadas" class="nav-link" data-scroll-target="#caso-4-fecha-de-inicio-de-sintomas-y-fecha-de-diagnostico-reportadas">CASO 4: fecha de inicio de sintomas y fecha de diagnostico reportadas</a></li>
+  </ul></li>
+  <li><a href="#base-de-datos-final" id="toc-base-de-datos-final" class="nav-link" data-scroll-target="#base-de-datos-final">Base de datos final</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -148,10 +208,862 @@ ul.task-list li input[type="checkbox"] {
 
 <hr>
 <p><strong>Input inicial</strong> Base de datos <code>csv</code> pública de casos de COVID-19 en Argentina.</p>
-<p><strong>Objetivo</strong> Obtener una base de datos limplia y lista de usar en GeoCovid app.</p>
+<p><strong>Objetivo</strong> Obtener una base de datos limplia y lista de usar en GeoCovid app: - Cada observación debe tener una fecha de contagio/enfermedad.</p>
 <hr>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.2     ✔ readr     2.1.4
+✔ forcats   1.0.0     ✔ stringr   1.5.0
+✔ ggplot2   3.4.3     ✔ tibble    3.2.1
+✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+✔ purrr     1.0.1     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
+
+Attaching package: 'arrow'
 
 
+The following object is masked from 'package:lubridate':
+
+    duration
+
+
+The following object is masked from 'package:utils':
+
+    timestamp
+
+
+
+Attaching package: 'plotly'
+
+
+The following object is masked from 'package:arrow':
+
+    schema
+
+
+The following object is masked from 'package:ggplot2':
+
+    last_plot
+
+
+The following object is masked from 'package:stats':
+
+    filter
+
+
+The following object is masked from 'package:graphics':
+
+    layout</code></pre>
+</div>
+</div>
+<section id="carga-de-los-datos-y-análisis-inicial" class="level2">
+<h2 class="anchored" data-anchor-id="carga-de-los-datos-y-análisis-inicial">Carga de los datos y análisis inicial</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Leo el archivo como csv. Esta en Dropbox ya que es bastante grande.</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>covid_data <span class="ot">&lt;-</span> arrow<span class="sc">::</span><span class="fu">open_dataset</span>(<span class="st">"/Users/florenciadandrea/Dropbox/data_geocovid/Covid19Casos.csv"</span>, </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">format =</span> <span class="st">'csv'</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Elijo que datos voy a descargar usando dplyr. </span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Los datos no se bajan hasta que uso collect()</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>covid_casos_muestra <span class="ot">&lt;-</span> covid_data <span class="sc">|&gt;</span> </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(clasificacion_resumen <span class="sc">!=</span> <span class="st">'Descartado'</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>         carga_provincia_nombre <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'CABA'</span>, <span class="st">'Buenos Aires'</span>) <span class="sc">|</span> residencia_provincia_nombre <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'CABA'</span>, <span class="st">'Buenos Aires'</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id_evento_caso,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>          edad, edad_años_meses, sexo,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>          carga_provincia_nombre,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>          residencia_pais_nombre, residencia_provincia_nombre, residencia_departamento_nombre,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>          fecha_inicio_sintomas, fecha_diagnostico, fecha_internacion, fecha_cui_intensivo, fecha_fallecimiento,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>          clasificacion, clasificacion_resumen) <span class="sc">|&gt;</span> </span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Los guardo en formato parquet para reducir el tamaño</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># write_parquet(covid_casos_muestra, "../data/covid_casos/covid_casos_baires.parquet")</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Composición del dataset:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>covid_casos_muestra <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"data/inicial/covid_casos_baires.parquet"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(covid_casos_muestra)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [5,245,880 × 15] (S3: tbl_df/tbl/data.frame)
+ $ id_evento_caso                : int [1:5245880] 10000049 10000055 10000057 1000006 10000066 10000076 10000079 10000084 10000087 10000093 ...
+ $ edad                          : int [1:5245880] 74 43 36 30 44 46 55 47 45 48 ...
+ $ edad_años_meses               : chr [1:5245880] "Años" "Años" "Años" "Años" ...
+ $ sexo                          : chr [1:5245880] "F" "F" "M" "M" ...
+ $ carga_provincia_nombre        : chr [1:5245880] "CABA" "CABA" "Buenos Aires" "Buenos Aires" ...
+ $ residencia_pais_nombre        : chr [1:5245880] "Argentina" "Argentina" "Argentina" "Argentina" ...
+ $ residencia_provincia_nombre   : chr [1:5245880] "CABA" "CABA" "Buenos Aires" "Buenos Aires" ...
+ $ residencia_departamento_nombre: chr [1:5245880] "COMUNA 09" "COMUNA 09" "Mercedes" "Malvinas Argentinas" ...
+ $ fecha_inicio_sintomas         : Date[1:5245880], format: NA NA ...
+ $ fecha_diagnostico             : Date[1:5245880], format: "2021-04-10" "2021-04-14" ...
+ $ fecha_internacion             : Date[1:5245880], format: NA NA ...
+ $ fecha_cui_intensivo           : Date[1:5245880], format: NA NA ...
+ $ fecha_fallecimiento           : Date[1:5245880], format: NA NA ...
+ $ clasificacion                 : chr [1:5245880] "Caso confirmado por laboratorio - No activo (por tiempo de evolución)" "Caso confirmado por laboratorio - No activo (por tiempo de evolución)" "Caso confirmado por laboratorio - No activo (por tiempo de evolución)" "Caso sospechoso - No Activo - Con muestra sin resultado concluyente" ...
+ $ clasificacion_resumen         : chr [1:5245880] "Confirmado" "Confirmado" "Confirmado" "Sospechoso" ...</code></pre>
+</div>
+</div>
+<p>En total, el dataset presenta información para 5245861 casos diferentes. Las variables disponibles se encuentran descriptas en <a href="#tbl-vars">Tabla&nbsp;1</a> de acuerdo a la información obtenida desde fuentes oficiales. De ellas fueron elegidas un porcentaje.</p>
+<p>Esto va a aplicar a ambos subdatasets.</p>
+<div id="tbl-vars" class="anchored">
+<table class="table">
+<caption>Tabla&nbsp;1: Variables provistas en el dataset de la Dirección Nacional de Epidemiología y Análisis de Situación de Salud</caption>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 24%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Titulo de la columna</th>
+<th style="text-align: left;">Tipo de dato</th>
+<th style="text-align: left;">Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>id_evento_caso</code></td>
+<td style="text-align: left;">Número entero (integer)</td>
+<td style="text-align: left;">Numero de caso</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>sexo</code></td>
+<td style="text-align: left;">Texto (string)</td>
+<td style="text-align: left;">Sexo</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>edad</code></td>
+<td style="text-align: left;">Número entero (integer)</td>
+<td style="text-align: left;">Edad</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>edad_años_meses</code></td>
+<td style="text-align: left;">Texto (string)</td>
+<td style="text-align: left;">Edad indicada en meses o años</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>residencia_pais_nombre</code></td>
+<td style="text-align: left;">Texto (string)</td>
+<td style="text-align: left;">País de residencia</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>residencia_provincia_nombre</code></td>
+<td style="text-align: left;">Texto (string)</td>
+<td style="text-align: left;">Provincia de residencia</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>residencia_departamento_nombre</code></td>
+<td style="text-align: left;">Texto (string)</td>
+<td style="text-align: left;">Departamento de residencia</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>carga_provincia_nombre</code></td>
+<td style="text-align: left;">Texto (string)</td>
+<td style="text-align: left;">Provincia de establecimiento de carga</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>fecha_inicio_sintomas</code></td>
+<td style="text-align: left;">Fecha ISO-8601 (date)</td>
+<td style="text-align: left;">Fecha de inicio de síntomas</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>fecha_apertura</code></td>
+<td style="text-align: left;">Fecha ISO-8601 (date)</td>
+<td style="text-align: left;">Fecha de apertura del caso</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>sepi_apertura</code></td>
+<td style="text-align: left;">Número entero (integer)</td>
+<td style="text-align: left;">Semana Epidemiológica de fecha de apertura</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>fecha_internacion</code></td>
+<td style="text-align: left;">Fecha ISO-8601 (date)</td>
+<td style="text-align: left;">Fecha de internación</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>cuidado_intensivo</code></td>
+<td style="text-align: left;">Fecha ISO-8601 (date)</td>
+<td style="text-align: left;">Fecha de ingreso a cuidado intensivo en el caso de corresponder</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>fallecido</code></td>
+<td style="text-align: left;">Texto (string)</td>
+<td style="text-align: left;">Indicación de fallecido</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>fecha_fallecimiento</code></td>
+<td style="text-align: left;">Fecha ISO-8601 (date)</td>
+<td style="text-align: left;">Fecha de fallecimiento</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>asistencia_respiratoria_mecanica</code></td>
+<td style="text-align: left;">Texto (string)</td>
+<td style="text-align: left;">Indicación si requirió asistencia respiratoria mecánica</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>carga_provincia_id</code></td>
+<td style="text-align: left;">Número entero (integer)</td>
+<td style="text-align: left;">Código de Provincia de carga</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>origen_financiamiento</code></td>
+<td style="text-align: left;">Texto (string)</td>
+<td style="text-align: left;">Origen de financiamiento</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>clasificacion</code></td>
+<td style="text-align: left;">Texto (string)</td>
+<td style="text-align: left;">Clasificación manual del registro</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>clasificacion_resumen</code></td>
+<td style="text-align: left;">Texto (string)</td>
+<td style="text-align: left;">Clasificación del caso</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>residencia_provincia_id</code></td>
+<td style="text-align: left;">Número entero (integer)</td>
+<td style="text-align: left;">Código de Provincia de residencia</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>fecha_diagnostico</code></td>
+<td style="text-align: left;">Tiempo ISO-8601 (time)</td>
+<td style="text-align: left;">Fecha de diagnóstico</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>residencia_departamento_id</code></td>
+<td style="text-align: left;">Número entero (integer)</td>
+<td style="text-align: left;">Código de Departamento de residencia</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>ultima_actualizacion</code></td>
+<td style="text-align: left;">Fecha ISO-8601 (date)</td>
+<td style="text-align: left;">Última actualización</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Datos faltantes</strong></p>
+<p><code>fecha_apertura</code> (variable descartada) es la unica variable que reporta una fecha para todas las observaciones. <code>fecha_diagnostico</code> y <code>fecha_inicio_sintomas</code> NO PRESENTAN datos para todas las observaciones.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(covid_casos_muestra)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> id_evento_caso          edad         edad_años_meses        sexo          
+ Min.   :  733774   Min.   : -84.00   Length:5245880     Length:5245880    
+ 1st Qu.: 8678407   1st Qu.:  27.00   Class :character   Class :character  
+ Median :16534314   Median :  38.00   Mode  :character   Mode  :character  
+ Mean   :17505517   Mean   :  39.63                                        
+ 3rd Qu.:27367564   3rd Qu.:  51.00                                        
+ Max.   :33222629   Max.   :2023.00                                        
+                    NA's   :1424                                           
+ carga_provincia_nombre residencia_pais_nombre residencia_provincia_nombre
+ Length:5245880         Length:5245880         Length:5245880             
+ Class :character       Class :character       Class :character           
+ Mode  :character       Mode  :character       Mode  :character           
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+ residencia_departamento_nombre fecha_inicio_sintomas fecha_diagnostico   
+ Length:5245880                 Min.   :2020-01-01    Min.   :1202-01-07  
+ Class :character               1st Qu.:2020-12-05    1st Qu.:2021-03-20  
+ Mode  :character               Median :2021-05-05    Median :2021-07-19  
+                                Mean   :2021-05-13    Mean   :2021-07-22  
+                                3rd Qu.:2021-12-28    3rd Qu.:2022-01-13  
+                                Max.   :2022-06-04    Max.   :2022-06-04  
+                                NA's   :2720185       NA's   :825927      
+ fecha_internacion    fecha_cui_intensivo  fecha_fallecimiento 
+ Min.   :2020-01-01   Min.   :2020-03-04   Min.   :2020-03-07  
+ 1st Qu.:2020-08-08   1st Qu.:2020-08-31   1st Qu.:2020-09-30  
+ Median :2020-12-28   Median :2021-02-15   Median :2021-04-06  
+ Mean   :2021-01-18   Mean   :2021-02-05   Mean   :2021-03-04  
+ 3rd Qu.:2021-05-24   3rd Qu.:2021-05-27   3rd Qu.:2021-06-10  
+ Max.   :2022-06-04   Max.   :2022-06-04   Max.   :2022-06-04  
+ NA's   :5103454      NA's   :5221684      NA's   :5169727     
+ clasificacion      clasificacion_resumen
+ Length:5245880     Length:5245880       
+ Class :character   Class :character     
+ Mode  :character   Mode  :character     
+                                         
+                                         
+                                         
+                                         </code></pre>
+</div>
+</div>
+<section id="total-de-casos-de-cada-clasificación-para-caba-y-buenos-aires" class="level3">
+<h3 class="anchored" data-anchor-id="total-de-casos-de-cada-clasificación-para-caba-y-buenos-aires">Total de casos de cada clasificación para CABA y Buenos Aires</h3>
+<p>La provincia de Buenos Aires tiene un mayor número de casos reportados en total para el período estudiado.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a> covid_casos_muestra <span class="sc">|&gt;</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(carga_provincia_nombre <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'CABA'</span>, <span class="st">'Buenos Aires'</span>)) <span class="sc">|&gt;</span> <span class="co"># este filtro tiene sentido porque considere los casos de residentes en caba y baires que fueron cargados en otras provincias tambien</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="dv">1</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(carga_provincia_nombre, clasificacion_resumen) <span class="sc">|&gt;</span> </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">x =</span> carga_provincia_nombre,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">y =</span> n,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>               <span class="at">fill =</span> clasificacion_resumen)) <span class="sc">+</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>(<span class="at">option =</span> <span class="st">"C"</span>) <span class="sc">+</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="st">'Cantidad de observaciones'</span>) <span class="sc">+</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="st">'carga_provincia_nombre'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="analisis_datos_covid_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="550"></p>
+</div>
+</div>
+</section>
+<section id="distribución-de-nas-en-las-distintas-fechas-reportadas" class="level3">
+<h3 class="anchored" data-anchor-id="distribución-de-nas-en-las-distintas-fechas-reportadas">Distribución de NAs en las distintas fechas reportadas</h3>
+<p>Debido a que la información de movilidad ciudadana se encuentra reportada por día es importante poder obtener una fecha asociada a cada observación.</p>
+<ul>
+<li><p><code>fecha_diagnostico</code> y <code>fecha_inicio_sintomas</code> son las variables con mayor número de observaciones y las más relevantes a nivel epidemiológico.</p></li>
+<li><p><code>fecha_cui_intensivo</code> presenta menor cantidad de observaciones que <code>fecha_fallecido</code>. Esto podria ser por falta de datos o por muertes que se dieron sin llegar a internacion.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>obs_fechas <span class="ot">&lt;-</span> covid_casos_muestra <span class="sc">|&gt;</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">starts_with</span>(<span class="st">'fecha_'</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">'names'</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">'values'</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                ) <span class="sc">|&gt;</span> </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(names) <span class="sc">|&gt;</span> </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">n =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(values))) </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(obs_fechas) <span class="sc">+</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">fct_reorder</span>(names, n),</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> n),</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill =</span> viridis<span class="sc">::</span><span class="fu">magma</span>(<span class="dv">3</span>)[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="st">'Variables'</span>) <span class="sc">+</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="st">'Datos presentes en la base de datos'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="analisis_datos_covid_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption class="figure-caption">Cantidad de casos de COVID-19 reportados</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="análisis-de-fecha_inicio_sintomas-y-fecha_diagnostico" class="level2">
+<h2 class="anchored" data-anchor-id="análisis-de-fecha_inicio_sintomas-y-fecha_diagnostico">Análisis de <code>fecha_inicio_sintomas</code> y <code>fecha_diagnostico</code></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>case_both_na <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(covid_casos_muestra<span class="sc">$</span>fecha_inicio_sintomas) <span class="sc">&amp;</span> <span class="fu">is.na</span>(covid_casos_muestra<span class="sc">$</span>fecha_diagnostico))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>case_sintomas_na <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(covid_casos_muestra<span class="sc">$</span>fecha_inicio_sintomas) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(covid_casos_muestra<span class="sc">$</span>fecha_diagnostico)) </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>case_diagnostico_na <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(covid_casos_muestra<span class="sc">$</span>fecha_inicio_sintomas) <span class="sc">&amp;</span> <span class="fu">is.na</span>(covid_casos_muestra<span class="sc">$</span>fecha_diagnostico)) </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>case_both_filled <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(covid_casos_muestra<span class="sc">$</span>fecha_inicio_sintomas) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(covid_casos_muestra<span class="sc">$</span>fecha_diagnostico))</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a table with the counts</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>table_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">casos =</span> <span class="fu">c</span>(<span class="st">"ambas_columnas_na"</span>, <span class="st">"fecha_inicio_sintomas_na"</span>, </span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">"fecha_diagnostico_na"</span>,<span class="st">"ambas_columnas_completas"</span>),</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>                         <span class="at">obs =</span> <span class="fu">c</span>(case_both_na, case_sintomas_na,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>                                   case_diagnostico_na, case_both_filled)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">porcentaje =</span> <span class="fu">round</span>((<span class="dv">100</span><span class="sc">*</span>obs)<span class="sc">/</span><span class="fu">nrow</span>(covid_casos_muestra), <span class="at">digit =</span> <span class="dv">1</span>))</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co"># chequeo que la cantidad de valores reportados en la tabla</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co"># equivale al total de observaciones</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">sum</span>(table_data<span class="sc">$</span>obs) <span class="sc">==</span> <span class="fu">nrow</span>(covid_casos_muestra)){</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(table_data)</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">casos</th>
+<th style="text-align: right;">obs</th>
+<th style="text-align: right;">porcentaje</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ambas_columnas_na</td>
+<td style="text-align: right;">284549</td>
+<td style="text-align: right;">5.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fecha_inicio_sintomas_na</td>
+<td style="text-align: right;">2435636</td>
+<td style="text-align: right;">46.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fecha_diagnostico_na</td>
+<td style="text-align: right;">541378</td>
+<td style="text-align: right;">10.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ambas_columnas_completas</td>
+<td style="text-align: right;">1984317</td>
+<td style="text-align: right;">37.8</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<section id="caso-1-fecha-de-inicio-de-sintomas-y-fecha-de-diagnostico-no-reportadas" class="level3">
+<h3 class="anchored" data-anchor-id="caso-1-fecha-de-inicio-de-sintomas-y-fecha-de-diagnostico-no-reportadas">CASO 1: fecha de inicio de sintomas y fecha de diagnostico no reportadas</h3>
+<p>Esto es el 5.4 % del total de la base de datos.</p>
+<p>La mayoría de estos casos son <code>sospechosos</code>, posibles falsos negativos.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>covid_casos_muestra <span class="sc">|&gt;</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(covid_casos_muestra<span class="sc">$</span>fecha_inicio_sintomas) <span class="sc">&amp;</span> <span class="fu">is.na</span>(covid_casos_muestra<span class="sc">$</span>fecha_diagnostico)) <span class="sc">|&gt;</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(clasificacion, clasificacion_resumen) <span class="sc">|&gt;</span> </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(clasificacion_resumen, clasificacion) <span class="sc">|&gt;</span> </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">obs =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(obs)) <span class="sc">|&gt;</span> </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'clasificacion_resumen'. You can override
+using the `.groups` argument.</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 75%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">clasificacion_resumen</th>
+<th style="text-align: left;">clasificacion</th>
+<th style="text-align: right;">obs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Sospechoso</td>
+<td style="text-align: left;">Caso sospechoso - No Activo - Con muestra sin resultado concluyente</td>
+<td style="text-align: right;">106623</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Confirmado</td>
+<td style="text-align: left;">Caso confirmado por criterio clínico-epidemiológico - No activo (por tiempo de evolución)</td>
+<td style="text-align: right;">77031</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sospechoso</td>
+<td style="text-align: left;">Caso sospechoso - No Activo - Sin muestra</td>
+<td style="text-align: right;">61349</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Probable</td>
+<td style="text-align: left;">Caso probable por Autotest - No Activo (por tiempo de evolución)</td>
+<td style="text-align: right;">23485</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Probable</td>
+<td style="text-align: left;">Caso probable por Autotest - Activo</td>
+<td style="text-align: right;">7336</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sospechoso</td>
+<td style="text-align: left;">Caso sospechoso - Activo Internado - Con muestra sin resultado concluyente</td>
+<td style="text-align: right;">2061</td>
+</tr>
+</tbody>
+</table>
+<p>Clasificación de los casos donde fecha_inicio_sintomas y fecha_diagnostico fueron no reportadas</p>
+</div>
+</div>
+</section>
+<section id="caso-2-fecha-de-inicio-de-sintomas-reportada-y-fecha-de-diagnostico-ausente" class="level3">
+<h3 class="anchored" data-anchor-id="caso-2-fecha-de-inicio-de-sintomas-reportada-y-fecha-de-diagnostico-ausente">CASO 2: fecha de inicio de sintomas reportada y fecha de diagnostico ausente</h3>
+<p>Esto es el 46.4 % del total de la base de datos.</p>
+<p>La mayoría de estas observaciones representan pacientes con casos confirmados por laboratorio.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>covid_casos_muestra <span class="sc">|&gt;</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(covid_casos_muestra<span class="sc">$</span>fecha_inicio_sintomas) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(covid_casos_muestra<span class="sc">$</span>fecha_diagnostico)) <span class="sc">|&gt;</span> </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(clasificacion, clasificacion_resumen) <span class="sc">|&gt;</span> </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(clasificacion_resumen, clasificacion) <span class="sc">|&gt;</span> </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">obs =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(obs)) <span class="sc">|&gt;</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'clasificacion_resumen'. You can override
+using the `.groups` argument.</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 75%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">clasificacion_resumen</th>
+<th style="text-align: left;">clasificacion</th>
+<th style="text-align: right;">obs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Confirmado</td>
+<td style="text-align: left;">Caso confirmado por laboratorio - No activo (por tiempo de evolución)</td>
+<td style="text-align: right;">2342696</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Confirmado</td>
+<td style="text-align: left;">Caso confirmado por laboratorio - No Activo por criterio de laboratorio</td>
+<td style="text-align: right;">45219</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Confirmado</td>
+<td style="text-align: left;">Caso confirmado por laboratorio - Activo</td>
+<td style="text-align: right;">27943</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Confirmado</td>
+<td style="text-align: left;">Caso confirmado por criterio clínico-epidemiológico - No activo (por tiempo de evolución)</td>
+<td style="text-align: right;">8837</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Confirmado</td>
+<td style="text-align: left;">Caso confirmado por laboratorio - Fallecido</td>
+<td style="text-align: right;">7814</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sospechoso</td>
+<td style="text-align: left;">Caso con resultado negativo-no conclusivo - Activo</td>
+<td style="text-align: right;">2097</td>
+</tr>
+</tbody>
+</table>
+<p>Clasificación de los casos donde solo fecha_inicio_sintomas fue reportada.</p>
+</div>
+</div>
+</section>
+<section id="caso-3-fecha-de-inicio-de-sintomas-ausente-y-fecha-de-diagnostico-reportada" class="level3">
+<h3 class="anchored" data-anchor-id="caso-3-fecha-de-inicio-de-sintomas-ausente-y-fecha-de-diagnostico-reportada">CASO 3: fecha de inicio de sintomas ausente y fecha de diagnostico reportada</h3>
+<p>Esto es el % del total de la base de datos.</p>
+<p>En este caso, en su mayoria son los casos que fueron confirmados por criterio clínico-epidemiologico.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>covid_casos_muestra <span class="sc">|&gt;</span> </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(covid_casos_muestra<span class="sc">$</span>fecha_inicio_sintomas) <span class="sc">&amp;</span> <span class="fu">is.na</span>(covid_casos_muestra<span class="sc">$</span>fecha_diagnostico)) <span class="sc">|&gt;</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(clasificacion, clasificacion_resumen) <span class="sc">|&gt;</span> </span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(clasificacion_resumen, clasificacion) <span class="sc">|&gt;</span> </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">obs =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(obs)) <span class="sc">|&gt;</span> </span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'clasificacion_resumen'. You can override
+using the `.groups` argument.</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 75%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">clasificacion_resumen</th>
+<th style="text-align: left;">clasificacion</th>
+<th style="text-align: right;">obs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Confirmado</td>
+<td style="text-align: left;">Caso confirmado por criterio clínico-epidemiológico - No activo (por tiempo de evolución)</td>
+<td style="text-align: right;">268559</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sospechoso</td>
+<td style="text-align: left;">Caso sospechoso - No Activo - Sin muestra</td>
+<td style="text-align: right;">130728</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sospechoso</td>
+<td style="text-align: left;">Caso sospechoso - No Activo - Con muestra sin resultado concluyente</td>
+<td style="text-align: right;">109266</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sospechoso</td>
+<td style="text-align: left;">Caso sospechoso - Activo Internado - Sin muestra</td>
+<td style="text-align: right;">11534</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sospechoso</td>
+<td style="text-align: left;">Caso sospechoso - Activo Internado - Con muestra sin resultado concluyente</td>
+<td style="text-align: right;">10104</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Confirmado</td>
+<td style="text-align: left;">Caso confirmado por criterio clínico - epidemiológico - Activo internado</td>
+<td style="text-align: right;">3803</td>
+</tr>
+</tbody>
+</table>
+<p>Clasificación de los casos donde solo fecha_diagnostico fue reportada.</p>
+</div>
+</div>
+</section>
+<section id="caso-4-fecha-de-inicio-de-sintomas-y-fecha-de-diagnostico-reportadas" class="level3">
+<h3 class="anchored" data-anchor-id="caso-4-fecha-de-inicio-de-sintomas-y-fecha-de-diagnostico-reportadas">CASO 4: fecha de inicio de sintomas y fecha de diagnostico reportadas</h3>
+<p>Esto es el 37.8 % del total de la base de datos.</p>
+<p>En este caso, en su mayoría son los casos que fueron confirmados por laboratorio.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>covid_casos_muestra <span class="sc">|&gt;</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(covid_casos_muestra<span class="sc">$</span>fecha_inicio_sintomas) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(covid_casos_muestra<span class="sc">$</span>fecha_diagnostico)) <span class="sc">|&gt;</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(clasificacion, clasificacion_resumen) <span class="sc">|&gt;</span> </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(clasificacion_resumen, clasificacion) <span class="sc">|&gt;</span> </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">obs =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(obs)) <span class="sc">|&gt;</span> </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'clasificacion_resumen'. You can override
+using the `.groups` argument.</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 75%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">clasificacion_resumen</th>
+<th style="text-align: left;">clasificacion</th>
+<th style="text-align: right;">obs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Confirmado</td>
+<td style="text-align: left;">Caso confirmado por laboratorio - No activo (por tiempo de evolución)</td>
+<td style="text-align: right;">1825253</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Confirmado</td>
+<td style="text-align: left;">Caso confirmado por laboratorio - Fallecido</td>
+<td style="text-align: right;">64442</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Confirmado</td>
+<td style="text-align: left;">Caso confirmado por laboratorio - No Activo por criterio de laboratorio</td>
+<td style="text-align: right;">50849</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Confirmado</td>
+<td style="text-align: left;">Caso confirmado por criterio clínico-epidemiológico - No activo (por tiempo de evolución)</td>
+<td style="text-align: right;">35131</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Confirmado</td>
+<td style="text-align: left;">Caso confirmado por laboratorio - Activo</td>
+<td style="text-align: right;">4687</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sospechoso</td>
+<td style="text-align: left;">Caso con resultado negativo-no conclusivo - Activo</td>
+<td style="text-align: right;">1054</td>
+</tr>
+</tbody>
+</table>
+<p>Clasificación de los casos donde fecha_inicio_sintomas y fecha_diagnostico fueron reportadas.</p>
+</div>
+</div>
+<section id="diferencia-de-días-entre-fecha_inicio_sintomas-y-fecha_diagnostico" class="level4">
+<h4 class="anchored" data-anchor-id="diferencia-de-días-entre-fecha_inicio_sintomas-y-fecha_diagnostico">Diferencia de días entre <code>fecha_inicio_sintomas</code> y <code>fecha_diagnostico</code></h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>dif_dias_total_casos <span class="ot">&lt;-</span> covid_casos_muestra <span class="sc">|&gt;</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(carga_provincia_nombre <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'CABA'</span>, <span class="st">'Buenos Aires'</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">dias_caso =</span> <span class="fu">as.numeric</span>(<span class="fu">difftime</span>(fecha_diagnostico, <span class="co"># time1</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>                                         fecha_inicio_sintomas, <span class="co"># time2</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">units=</span><span class="st">"days"</span>))) <span class="co"># logica: time1 - time2</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>dif_dias <span class="ot">&lt;-</span> dif_dias_total_casos <span class="sc">|&gt;</span> </span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>   dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(fecha_inicio_sintomas) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(fecha_diagnostico))  <span class="co"># CASO 4</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>dif_dias</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,973,695 × 16
+   id_evento_caso  edad edad_años_meses sexo  carga_provincia_nombre
+            &lt;int&gt; &lt;int&gt; &lt;chr&gt;           &lt;chr&gt; &lt;chr&gt;                 
+ 1       10000079    55 Años            M     Buenos Aires          
+ 2       10000084    47 Años            M     Buenos Aires          
+ 3       10000087    45 Años            F     Buenos Aires          
+ 4       10000093    48 Años            M     Buenos Aires          
+ 5       10000099    54 Años            F     Buenos Aires          
+ 6        1000012    48 Años            M     CABA                  
+ 7       10000143    50 Años            M     Buenos Aires          
+ 8        1000015    31 Años            F     Buenos Aires          
+ 9       10000157    25 Años            M     Buenos Aires          
+10       10000187    32 Años            M     Buenos Aires          
+# ℹ 1,973,685 more rows
+# ℹ 11 more variables: residencia_pais_nombre &lt;chr&gt;,
+#   residencia_provincia_nombre &lt;chr&gt;, residencia_departamento_nombre &lt;chr&gt;,
+#   fecha_inicio_sintomas &lt;date&gt;, fecha_diagnostico &lt;date&gt;,
+#   fecha_internacion &lt;date&gt;, fecha_cui_intensivo &lt;date&gt;,
+#   fecha_fallecimiento &lt;date&gt;, clasificacion &lt;chr&gt;,
+#   clasificacion_resumen &lt;chr&gt;, dias_caso &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>Los casos tienen un rango que va del positivo al negativo.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(dif_dias<span class="sc">$</span>dias_caso)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -7304   828</code></pre>
+</div>
+</div>
+<p>Si grafico, observo que la gran mayoria de los casos cae entre 0 a 10 dias.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>dif_dias <span class="sc">|&gt;</span> </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(dias_caso <span class="sc">&lt;</span> <span class="dv">30</span>, dias_caso <span class="sc">&gt;</span> <span class="sc">-</span><span class="dv">7</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(dias_caso, carga_provincia_nombre) <span class="sc">|&gt;</span> </span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> dias_caso,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">y =</span> n,</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill =</span> carga_provincia_nombre)) <span class="sc">+</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>()<span class="sc">+</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">'Cantidad de observaciones'</span>) <span class="sc">+</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">'Diferencia entre fecha_inicio_sintomas y fecha_diagnostico'</span>)</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-3d65672a8f9557cdeb1e" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-3d65672a8f9557cdeb1e">{"x":{"data":[{"orientation":"v","width":[0.90000000000000036,0.90000000000000036,0.90000000000000036,0.90000000000000036,0.90000000000000013,0.89999999999999991,0.90000000000000002,0.89999999999999991,0.90000000000000013,0.90000000000000036,0.90000000000000036,0.90000000000000036,0.90000000000000036,0.90000000000000036,0.89999999999999947,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858],"base":[246,304,335,481,670,1344,33817,54229,78576,83164,54695,31102,18421,14589,8855,5712,4349,3026,1978,1667,1589,1220,882,781,641,470,492,463,464,336,282,248,236,211,196,214],"x":[-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29],"y":[366,462,517,664,975,1828,78256,152167,255087,290846,230733,159629,103442,70684,47695,31830,21530,15433,11210,8745,7181,5843,4598,3723,2861,2284,1906,1700,1523,1246,1112,943,860,802,703,564],"text":["dias_caso: -6<br />n:    366<br />carga_provincia_nombre: Buenos Aires","dias_caso: -5<br />n:    462<br />carga_provincia_nombre: Buenos Aires","dias_caso: -4<br />n:    517<br />carga_provincia_nombre: Buenos Aires","dias_caso: -3<br />n:    664<br />carga_provincia_nombre: Buenos Aires","dias_caso: -2<br />n:    975<br />carga_provincia_nombre: Buenos Aires","dias_caso: -1<br />n:   1828<br />carga_provincia_nombre: Buenos Aires","dias_caso:  0<br />n:  78256<br />carga_provincia_nombre: Buenos Aires","dias_caso:  1<br />n: 152167<br />carga_provincia_nombre: Buenos Aires","dias_caso:  2<br />n: 255087<br />carga_provincia_nombre: Buenos Aires","dias_caso:  3<br />n: 290846<br />carga_provincia_nombre: Buenos Aires","dias_caso:  4<br />n: 230733<br />carga_provincia_nombre: Buenos Aires","dias_caso:  5<br />n: 159629<br />carga_provincia_nombre: Buenos Aires","dias_caso:  6<br />n: 103442<br />carga_provincia_nombre: Buenos Aires","dias_caso:  7<br />n:  70684<br />carga_provincia_nombre: Buenos Aires","dias_caso:  8<br />n:  47695<br />carga_provincia_nombre: Buenos Aires","dias_caso:  9<br />n:  31830<br />carga_provincia_nombre: Buenos Aires","dias_caso: 10<br />n:  21530<br />carga_provincia_nombre: Buenos Aires","dias_caso: 11<br />n:  15433<br />carga_provincia_nombre: Buenos Aires","dias_caso: 12<br />n:  11210<br />carga_provincia_nombre: Buenos Aires","dias_caso: 13<br />n:   8745<br />carga_provincia_nombre: Buenos Aires","dias_caso: 14<br />n:   7181<br />carga_provincia_nombre: Buenos Aires","dias_caso: 15<br />n:   5843<br />carga_provincia_nombre: Buenos Aires","dias_caso: 16<br />n:   4598<br />carga_provincia_nombre: Buenos Aires","dias_caso: 17<br />n:   3723<br />carga_provincia_nombre: Buenos Aires","dias_caso: 18<br />n:   2861<br />carga_provincia_nombre: Buenos Aires","dias_caso: 19<br />n:   2284<br />carga_provincia_nombre: Buenos Aires","dias_caso: 20<br />n:   1906<br />carga_provincia_nombre: Buenos Aires","dias_caso: 21<br />n:   1700<br />carga_provincia_nombre: Buenos Aires","dias_caso: 22<br />n:   1523<br />carga_provincia_nombre: Buenos Aires","dias_caso: 23<br />n:   1246<br />carga_provincia_nombre: Buenos Aires","dias_caso: 24<br />n:   1112<br />carga_provincia_nombre: Buenos Aires","dias_caso: 25<br />n:    943<br />carga_provincia_nombre: Buenos Aires","dias_caso: 26<br />n:    860<br />carga_provincia_nombre: Buenos Aires","dias_caso: 27<br />n:    802<br />carga_provincia_nombre: Buenos Aires","dias_caso: 28<br />n:    703<br />carga_provincia_nombre: Buenos Aires","dias_caso: 29<br />n:    564<br />carga_provincia_nombre: Buenos Aires"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(68,1,84,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"Buenos Aires","legendgroup":"Buenos Aires","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.90000000000000036,0.90000000000000036,0.90000000000000036,0.90000000000000036,0.90000000000000013,0.89999999999999991,0.90000000000000002,0.89999999999999991,0.90000000000000013,0.90000000000000036,0.90000000000000036,0.90000000000000036,0.90000000000000036,0.90000000000000036,0.89999999999999947,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29],"y":[246,304,335,481,670,1344,33817,54229,78576,83164,54695,31102,18421,14589,8855,5712,4349,3026,1978,1667,1589,1220,882,781,641,470,492,463,464,336,282,248,236,211,196,214],"text":["dias_caso: -6<br />n:    246<br />carga_provincia_nombre: CABA","dias_caso: -5<br />n:    304<br />carga_provincia_nombre: CABA","dias_caso: -4<br />n:    335<br />carga_provincia_nombre: CABA","dias_caso: -3<br />n:    481<br />carga_provincia_nombre: CABA","dias_caso: -2<br />n:    670<br />carga_provincia_nombre: CABA","dias_caso: -1<br />n:   1344<br />carga_provincia_nombre: CABA","dias_caso:  0<br />n:  33817<br />carga_provincia_nombre: CABA","dias_caso:  1<br />n:  54229<br />carga_provincia_nombre: CABA","dias_caso:  2<br />n:  78576<br />carga_provincia_nombre: CABA","dias_caso:  3<br />n:  83164<br />carga_provincia_nombre: CABA","dias_caso:  4<br />n:  54695<br />carga_provincia_nombre: CABA","dias_caso:  5<br />n:  31102<br />carga_provincia_nombre: CABA","dias_caso:  6<br />n:  18421<br />carga_provincia_nombre: CABA","dias_caso:  7<br />n:  14589<br />carga_provincia_nombre: CABA","dias_caso:  8<br />n:   8855<br />carga_provincia_nombre: CABA","dias_caso:  9<br />n:   5712<br />carga_provincia_nombre: CABA","dias_caso: 10<br />n:   4349<br />carga_provincia_nombre: CABA","dias_caso: 11<br />n:   3026<br />carga_provincia_nombre: CABA","dias_caso: 12<br />n:   1978<br />carga_provincia_nombre: CABA","dias_caso: 13<br />n:   1667<br />carga_provincia_nombre: CABA","dias_caso: 14<br />n:   1589<br />carga_provincia_nombre: CABA","dias_caso: 15<br />n:   1220<br />carga_provincia_nombre: CABA","dias_caso: 16<br />n:    882<br />carga_provincia_nombre: CABA","dias_caso: 17<br />n:    781<br />carga_provincia_nombre: CABA","dias_caso: 18<br />n:    641<br />carga_provincia_nombre: CABA","dias_caso: 19<br />n:    470<br />carga_provincia_nombre: CABA","dias_caso: 20<br />n:    492<br />carga_provincia_nombre: CABA","dias_caso: 21<br />n:    463<br />carga_provincia_nombre: CABA","dias_caso: 22<br />n:    464<br />carga_provincia_nombre: CABA","dias_caso: 23<br />n:    336<br />carga_provincia_nombre: CABA","dias_caso: 24<br />n:    282<br />carga_provincia_nombre: CABA","dias_caso: 25<br />n:    248<br />carga_provincia_nombre: CABA","dias_caso: 26<br />n:    236<br />carga_provincia_nombre: CABA","dias_caso: 27<br />n:    211<br />carga_provincia_nombre: CABA","dias_caso: 28<br />n:    196<br />carga_provincia_nombre: CABA","dias_caso: 29<br />n:    214<br />carga_provincia_nombre: CABA"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(253,231,37,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"CABA","legendgroup":"CABA","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":26.228310502283108,"r":7.3059360730593621,"b":40.182648401826498,"l":60.639269406392714},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-8.245000000000001,31.244999999999997],"tickmode":"array","ticktext":["0","10","20","30"],"tickvals":[0,10,20,30.000000000000004],"categoryorder":"array","categoryarray":["0","10","20","30"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":{"text":"Diferencia entre fecha_inicio_sintomas y fecha_diagnostico","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-18700.5,392710.5],"tickmode":"array","ticktext":["0","100000","200000","300000"],"tickvals":[0,100000,200000.00000000003,300000],"categoryorder":"array","categoryarray":["0","100000","200000","300000"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":{"text":"Cantidad de observaciones","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"carga_provincia_nombre","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"5f3635ae968d":{"x":{},"y":{},"fill":{},"type":"bar"}},"cur_data":"5f3635ae968d","visdat":{"5f3635ae968d":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>Período entre fecha_inicio_sintomas y fecha_diagnostico reportado para Buenos Aires y CABA, en los casos donde ambos valores fueron reportados</p>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="base-de-datos-final" class="level2">
+<h2 class="anchored" data-anchor-id="base-de-datos-final">Base de datos final</h2>
+<ul>
+<li>Debido a que los datos de movilidad ciudadana solo son para el año 2020, se limita la base a ese periodo.</li>
+<li>Considerando los casos descriptos anteriormente se tomaran las decisiones resumidas <a href="#tbl-desicion">Tabla&nbsp;2</a> para la creación de una nueva variable <code>fecha_enfermo</code>:</li>
+</ul>
+<div id="tbl-desicion" class="anchored">
+<table class="table">
+<caption>Tabla&nbsp;2: Desiciones para la creación de la variable <code>fecha_enfermo</code></caption>
+<colgroup>
+<col style="width: 2%">
+<col style="width: 60%">
+<col style="width: 36%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Caso</th>
+<th style="text-align: left;">Descripcion</th>
+<th style="text-align: left;">fecha_enfermo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;"><code>fecha_inicio_sintomas</code> y <code>fecha_diagnostico</code> no reportadas</td>
+<td style="text-align: left;">Remover casos</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: left;"><code>fecha_inicio_sintomas</code> reportada y <code>fecha_diagnostico</code> ausente</td>
+<td style="text-align: left;">Se considera <code>fecha_diagnostico</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;"><code>fecha_inicio_sintomas</code> ausente y <code>fecha_diagnostico</code> reportada</td>
+<td style="text-align: left;">Se considera <code>fecha_inicio_sintomas</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: left;"><code>fecha_inicio_sintomas</code> y <code>fecha_diagnostico</code> reportadas</td>
+<td style="text-align: left;">Se conserva <code>fecha_inicio_sintoma</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>Para el caso 4, se eliminaron tambien los casos donde la diferencia entre <code>fecha_inicio_sintomas</code> y <code>fecha_diagnostico</code> era mayor a 30 o menor a -7.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># periodo de analisis</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>covid_inicio <span class="ot">&lt;-</span> <span class="fu">ymd</span>(<span class="st">"2020-03-01"</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>covid_final <span class="ot">&lt;-</span> <span class="fu">ymd</span>(<span class="st">"2022-03-31"</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>periodo <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  covid_inicio <span class="sc">&lt;=</span> x <span class="sc">&amp;</span> covid_final <span class="sc">&gt;=</span> x</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>covid_casos_muestra <span class="ot">&lt;-</span>  covid_casos_muestra <span class="sc">|&gt;</span> </span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">if_all</span>(<span class="fu">starts_with</span>(<span class="st">'fecha_'</span>),</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>               <span class="sc">~</span> <span class="fu">is.na</span>(.x) <span class="sc">|</span> covid_inicio <span class="sc">&lt;=</span> .x <span class="sc">&amp;</span> covid_final <span class="sc">&gt;=</span> .x))     </span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>base_covid_completa <span class="ot">&lt;-</span> dif_dias_total_casos <span class="sc">|&gt;</span> </span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>                          <span class="co"># elimino casos donde la diferencia de dias entre </span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>                          <span class="co"># fecha de sintomas y diagnostico es muy extrema</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">filter</span>(dias_caso <span class="sc">&lt;</span> <span class="dv">30</span>,</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>                                 dias_caso <span class="sc">&gt;</span> <span class="sc">-</span><span class="dv">7</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">mutate</span>(<span class="at">fecha_enfermo =</span> <span class="fu">case_when</span>(</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>                            <span class="co"># CASO 1</span></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>                              <span class="sc">!</span><span class="fu">is.na</span>(fecha_inicio_sintomas) <span class="sc">&amp;</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>                              <span class="sc">!</span><span class="fu">is.na</span>(fecha_diagnostico) <span class="sc">~</span> <span class="fu">as.character</span>(fecha_inicio_sintomas),</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>                            <span class="co"># CASO 2</span></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>                              <span class="fu">is.na</span>(fecha_inicio_sintomas) <span class="sc">&amp;</span> </span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>                              <span class="sc">!</span><span class="fu">is.na</span>(fecha_diagnostico) <span class="sc">~</span> <span class="fu">as.character</span>(fecha_diagnostico),</span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>                            <span class="co"># CASO 3</span></span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>                              <span class="sc">!</span><span class="fu">is.na</span>(fecha_inicio_sintomas) <span class="sc">&amp;</span></span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>                              <span class="fu">is.na</span>(fecha_diagnostico) <span class="sc">~</span> <span class="fu">as.character</span>(fecha_inicio_sintomas),</span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>                            <span class="co"># CASO 4</span></span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>                              <span class="fu">is.na</span>(fecha_inicio_sintomas) <span class="sc">&amp;</span></span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>                              <span class="fu">is.na</span>(fecha_diagnostico) <span class="sc">~</span> <span class="cn">NA_character_</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>                              <span class="fu">filter</span>(fecha_enfermo <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(<span class="st">'2020-12-31'</span>),</span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>                                     fecha_enfermo <span class="sc">&gt;=</span> <span class="fu">as.Date</span>(<span class="st">'2020-03-01'</span>)) </span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>base_covid_completa <span class="ot">&lt;-</span> base_covid_completa <span class="sc">|&gt;</span> </span>
+<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">drop_na</span>(fecha_enfermo) <span class="co"># remuevo el caso 1</span></span>
+<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(base_covid_completa)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 17
+  id_evento_caso  edad edad_años_meses sexo  carga_provincia_nombre
+           &lt;int&gt; &lt;int&gt; &lt;chr&gt;           &lt;chr&gt; &lt;chr&gt;                 
+1        1000012    48 Años            M     CABA                  
+2        1000015    31 Años            F     Buenos Aires          
+3        1000024    63 Años            M     CABA                  
+4        1000025    23 Años            M     Buenos Aires          
+5        1000037    77 Años            F     CABA                  
+6        1000052    31 Años            F     Buenos Aires          
+# ℹ 12 more variables: residencia_pais_nombre &lt;chr&gt;,
+#   residencia_provincia_nombre &lt;chr&gt;, residencia_departamento_nombre &lt;chr&gt;,
+#   fecha_inicio_sintomas &lt;date&gt;, fecha_diagnostico &lt;date&gt;,
+#   fecha_internacion &lt;date&gt;, fecha_cui_intensivo &lt;date&gt;,
+#   fecha_fallecimiento &lt;date&gt;, clasificacion &lt;chr&gt;,
+#   clasificacion_resumen &lt;chr&gt;, dias_caso &lt;dbl&gt;, fecha_enfermo &lt;chr&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># guardo la base</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_parquet</span>(base_covid_completa, <span class="st">"data/procesada/covid_casos_baires_geocovid.parquet"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -208,12 +1120,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // flash "checked"
     button.classList.add('code-copy-button-checked');
     var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "Copied!");
+    button.setAttribute("title", "Copiado");
     let tooltip;
     if (window.bootstrap) {
       button.setAttribute("data-bs-toggle", "tooltip");
       button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Copied!");
+      button.setAttribute("data-bs-title", "Copiado");
       tooltip = new bootstrap.Tooltip(button, 
         { trigger: "manual", 
           customClass: "code-copy-button-tooltip",

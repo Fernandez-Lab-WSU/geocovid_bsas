@@ -1,5 +1,6 @@
 ---
 title: "Creación de imagenes raster"
+lang: es
 ---
 
 ---

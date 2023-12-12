@@ -1,5 +1,6 @@
 ---
 title: "Análisis de datos de COVID-19"
+lang: es
 ---
 
 
@@ -9,6 +10,390 @@ title: "Análisis de datos de COVID-19"
 Base de datos `csv` pública de casos de COVID-19 en Argentina.
 
 **Objetivo**
-Obtener una base de datos limplia y lista de usar en GeoCovid app.
+Obtener una base de datos limplia y lista de usar en GeoCovid app:
+- Cada observación debe tener una fecha de contagio/enfermedad.
 
 ---
+
+```{r setup, echo = FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(arrow)
+library(lubridate)
+library(plotly)
+library(knitr)
+
+options(scipen=999)
+```
+
+## Carga de los datos y análisis inicial
+
+```{r include=TRUE, eval = FALSE}
+
+
+# Leo el archivo como csv. Esta en Dropbox ya que es bastante grande.
+covid_data <- arrow::open_dataset("/Users/florenciadandrea/Dropbox/data_geocovid/Covid19Casos.csv", 
+                           format = 'csv')
+
+# Elijo que datos voy a descargar usando dplyr. 
+# Los datos no se bajan hasta que uso collect()
+
+covid_casos_muestra <- covid_data |> 
+  filter(clasificacion_resumen != 'Descartado',
+         carga_provincia_nombre %in% c('CABA', 'Buenos Aires') | residencia_provincia_nombre %in% c('CABA', 'Buenos Aires')) |>
+  select(id_evento_caso,
+          edad, edad_años_meses, sexo,
+          carga_provincia_nombre,
+          residencia_pais_nombre, residencia_provincia_nombre, residencia_departamento_nombre,
+          fecha_inicio_sintomas, fecha_diagnostico, fecha_internacion, fecha_cui_intensivo, fecha_fallecimiento,
+          clasificacion, clasificacion_resumen) |> 
+  collect()
+
+# Los guardo en formato parquet para reducir el tamaño
+# write_parquet(covid_casos_muestra, "../data/covid_casos/covid_casos_baires.parquet")
+
+```
+
+Composición del dataset:
+
+```{r}
+
+covid_casos_muestra <- read_parquet("data/inicial/covid_casos_baires.parquet")
+str(covid_casos_muestra)
+```
+
+En total, el dataset presenta información para `r nrow(covid_casos_muestra |> count(id_evento_caso))` casos diferentes. Las variables disponibles se encuentran descriptas en @tbl-vars de acuerdo a la información obtenida desde fuentes oficiales. De ellas fueron elegidas un porcentaje.
+
+Esto va a aplicar a ambos subdatasets.
+
+
+|  Titulo de la columna             |    Tipo de dato          |  Descripción                               |  
+|:----------------------------------|:-------------------------|:-------------------------------------------|
+| `id_evento_caso`                  | Número entero (integer)  | Numero de caso                             | 
+| `sexo`                            | Texto (string)           | Sexo                                       |  
+| `edad`                            | Número entero (integer)  | Edad                                       |  
+| `edad_años_meses`                 | Texto (string)           | Edad indicada en meses o años              |  
+| `residencia_pais_nombre`          | Texto (string)           | País de residencia                         |   
+| `residencia_provincia_nombre`     | Texto (string)           | Provincia de residencia                    | 
+| `residencia_departamento_nombre`  | Texto (string)           | Departamento de residencia                 |  
+| `carga_provincia_nombre`          | Texto (string)           | Provincia de establecimiento de carga      |  
+| `fecha_inicio_sintomas`           | Fecha ISO-8601 (date)    | Fecha de inicio de síntomas                |   
+| `fecha_apertura`                  | Fecha ISO-8601 (date)    | Fecha de apertura del caso                 |  
+| `sepi_apertura`                   | Número entero (integer)  | Semana Epidemiológica de fecha de apertura |   
+| `fecha_internacion`               | Fecha ISO-8601 (date)    | Fecha de internación                       | 
+| `cuidado_intensivo`               | Fecha ISO-8601 (date)    | Fecha de ingreso a cuidado intensivo en el caso de corresponder |  
+| `fallecido`                       | Texto (string)           | Indicación de fallecido                    |  
+| `fecha_fallecimiento`             | Fecha ISO-8601 (date)    | Fecha de fallecimiento                     |  
+| `asistencia_respiratoria_mecanica`| Texto (string)           | Indicación si requirió asistencia respiratoria mecánica |   
+| `carga_provincia_id`              | Número entero (integer)  | Código de Provincia de carga               |  
+| `origen_financiamiento`           | Texto (string)           | Origen de financiamiento                   |
+| `clasificacion`                   | Texto (string)           | Clasificación manual del registro          |
+| `clasificacion_resumen`           | Texto (string)           | Clasificación del caso                     |
+| `residencia_provincia_id`         | Número entero (integer)  | Código de Provincia de residencia          |
+| `fecha_diagnostico`               | Tiempo ISO-8601 (time)   | Fecha de diagnóstico                       |
+| `residencia_departamento_id`      | Número entero (integer)  | Código de Departamento de residencia       |
+| `ultima_actualizacion`            | Fecha ISO-8601 (date)    | Última actualización                       |
+
+: Variables provistas en el dataset de la Dirección Nacional de Epidemiología y Análisis de Situación de Salud {#tbl-vars} 
+
+**Datos faltantes**
+
+`fecha_apertura` (variable descartada) es la unica variable que reporta una fecha para todas las observaciones. `fecha_diagnostico` y `fecha_inicio_sintomas` NO PRESENTAN datos para todas las observaciones. 
+
+```{r}
+summary(covid_casos_muestra)
+```
+
+### Total de casos de cada clasificación para CABA y Buenos Aires
+
+La provincia de Buenos Aires tiene un mayor número de casos reportados en 
+total para el período estudiado.
+
+```{r}
+#| out.width: 550
+
+ covid_casos_muestra |> 
+  filter(carga_provincia_nombre %in% c('CABA', 'Buenos Aires')) |> # este filtro tiene sentido porque considere los casos de residentes en caba y baires que fueron cargados en otras provincias tambien
+  select(-1) |> 
+  count(carga_provincia_nombre, clasificacion_resumen) |> 
+  ggplot() +
+  geom_col(aes(x = carga_provincia_nombre,
+               y = n,
+               fill = clasificacion_resumen)) +
+  scale_fill_viridis_d(option = "C") +
+  theme_minimal() +
+    ylab('Cantidad de observaciones') +
+    xlab('carga_provincia_nombre')
+  
+```
+
+### Distribución de NAs en las distintas fechas reportadas
+
+Debido a que la información de movilidad ciudadana se encuentra reportada por 
+día es importante poder obtener una fecha asociada a cada observación.
+
+* `fecha_diagnostico` y `fecha_inicio_sintomas` son las variables con mayor
+número de observaciones y las más relevantes a nivel epidemiológico.
+
+* `fecha_cui_intensivo` presenta menor cantidad de observaciones que 
+`fecha_fallecido`. Esto podria ser por falta de datos o por muertes que se
+dieron sin llegar a internacion.
+
+```{r}
+#| fig-cap: 'Cantidad de casos de COVID-19 reportados '
+
+obs_fechas <- covid_casos_muestra |> 
+  select(starts_with('fecha_')) |> 
+  pivot_longer(1:5,
+               names_to = 'names',
+               values_to = 'values'
+                ) |> 
+  group_by(names) |> 
+  summarize(n = sum(!is.na(values))) 
+
+
+  ggplot(obs_fechas) +
+  geom_col(aes(x = fct_reorder(names, n),
+           y = n),
+           fill = viridis::magma(3)[2]) +
+    theme_minimal() +
+    coord_flip() +
+    xlab('Variables') +
+    ylab('Datos presentes en la base de datos')
+    
+```
+
+
+
+
+## Análisis de `fecha_inicio_sintomas` y `fecha_diagnostico`
+
+
+
+```{r}
+
+
+case_both_na <- sum(is.na(covid_casos_muestra$fecha_inicio_sintomas) & is.na(covid_casos_muestra$fecha_diagnostico))
+
+case_sintomas_na <- sum(is.na(covid_casos_muestra$fecha_inicio_sintomas) & !is.na(covid_casos_muestra$fecha_diagnostico)) 
+
+case_diagnostico_na <- sum(!is.na(covid_casos_muestra$fecha_inicio_sintomas) & is.na(covid_casos_muestra$fecha_diagnostico)) 
+
+case_both_filled <- sum(!is.na(covid_casos_muestra$fecha_inicio_sintomas) & !is.na(covid_casos_muestra$fecha_diagnostico))
+
+# Create a table with the counts
+table_data <- data.frame(casos = c("ambas_columnas_na", "fecha_inicio_sintomas_na", 
+                                   "fecha_diagnostico_na","ambas_columnas_completas"),
+                         obs = c(case_both_na, case_sintomas_na,
+                                   case_diagnostico_na, case_both_filled)
+) |> 
+  mutate(porcentaje = round((100*obs)/nrow(covid_casos_muestra), digit = 1))
+
+
+
+# chequeo que la cantidad de valores reportados en la tabla
+# equivale al total de observaciones
+if(sum(table_data$obs) == nrow(covid_casos_muestra)){
+  
+  kable(table_data)
+}
+
+
+
+```
+
+
+###  CASO 1: fecha de inicio de sintomas y fecha de diagnostico no reportadas
+
+Esto es el `r round((100*table_data[table_data$casos == 'ambas_columnas_na', 'obs'])/nrow(covid_casos_muestra), digit = 1)` % del total de la base de datos.
+
+La mayoría de estos casos son `sospechosos`, posibles falsos negativos. 
+
+```{r}
+#| fig-cap: 'Clasificación de los casos donde fecha_inicio_sintomas y fecha_diagnostico fueron no reportadas'
+
+
+covid_casos_muestra |> 
+  filter(is.na(covid_casos_muestra$fecha_inicio_sintomas) & is.na(covid_casos_muestra$fecha_diagnostico)) |> 
+  select(clasificacion, clasificacion_resumen) |> 
+  group_by(clasificacion_resumen, clasificacion) |> 
+  summarize(obs = n()) |> 
+  arrange(desc(obs)) |> 
+  head() |> 
+  kable()
+
+```
+
+###  CASO 2: fecha de inicio de sintomas reportada y fecha de diagnostico ausente
+
+Esto es el `r round((100*table_data[table_data$casos == 'fecha_inicio_sintomas_na', 'obs'])/nrow(covid_casos_muestra), digit = 1)` % del total de la base de datos.
+
+La mayoría de estas observaciones representan pacientes con casos confirmados por
+laboratorio.
+
+```{r}
+#| fig-cap: 'Clasificación de los casos donde solo fecha_inicio_sintomas fue reportada.'
+
+
+covid_casos_muestra |> 
+  filter(is.na(covid_casos_muestra$fecha_inicio_sintomas) & !is.na(covid_casos_muestra$fecha_diagnostico)) |> 
+  select(clasificacion, clasificacion_resumen) |> 
+  group_by(clasificacion_resumen, clasificacion) |> 
+  summarize(obs = n()) |> 
+  arrange(desc(obs)) |>
+  head() |> 
+  kable()
+```
+
+###  CASO 3: fecha de inicio de sintomas ausente y fecha de diagnostico reportada
+
+Esto es el `r round((100*table_data[table_data$casos == 'fecha_inicio_sintomas_na', 'numero_na'])/nrow(covid_casos_muestra), digit = 1)` % del total de la base de datos.
+
+En este caso, en su mayoria son los casos que fueron confirmados por criterio 
+clínico-epidemiologico.
+
+```{r}
+#| fig-cap: 'Clasificación de los casos donde solo fecha_diagnostico fue reportada.'
+
+covid_casos_muestra |> 
+  filter(!is.na(covid_casos_muestra$fecha_inicio_sintomas) & is.na(covid_casos_muestra$fecha_diagnostico)) |> 
+  select(clasificacion, clasificacion_resumen) |> 
+  group_by(clasificacion_resumen, clasificacion) |> 
+  summarize(obs = n()) |> 
+  arrange(desc(obs)) |> 
+  head() |> 
+  kable()
+```
+
+###  CASO 4: fecha de inicio de sintomas y fecha de diagnostico reportadas
+
+Esto es el `r round((100*table_data[table_data$casos == 'ambas_columnas_completas', 'obs'])/nrow(covid_casos_muestra), digit = 1)` % del total de la base de datos.
+
+En este caso, en su mayoría son los casos que fueron confirmados por laboratorio.
+
+
+```{r}
+#| fig-cap: 'Clasificación de los casos donde fecha_inicio_sintomas y fecha_diagnostico fueron reportadas.'
+
+
+covid_casos_muestra |> 
+  filter(!is.na(covid_casos_muestra$fecha_inicio_sintomas) & !is.na(covid_casos_muestra$fecha_diagnostico)) |> 
+  select(clasificacion, clasificacion_resumen) |> 
+  group_by(clasificacion_resumen, clasificacion) |> 
+  summarize(obs = n()) |> 
+  arrange(desc(obs)) |> 
+  head() |> 
+  kable()
+
+
+```
+
+#### Diferencia de días entre `fecha_inicio_sintomas` y `fecha_diagnostico`
+
+
+```{r}
+
+dif_dias_total_casos <- covid_casos_muestra |> 
+  dplyr::filter(carga_provincia_nombre %in% c('CABA', 'Buenos Aires')) |> 
+  mutate(dias_caso = as.numeric(difftime(fecha_diagnostico, # time1
+                                         fecha_inicio_sintomas, # time2
+                                         units="days"))) # logica: time1 - time2
+
+dif_dias <- dif_dias_total_casos |> 
+   dplyr::filter(!is.na(fecha_inicio_sintomas) & !is.na(fecha_diagnostico))  # CASO 4
+
+dif_dias
+```
+
+Los casos tienen un rango que va del positivo al negativo.
+
+```{r}
+range(dif_dias$dias_caso)
+```
+
+Si grafico, observo que la gran mayoria de los casos cae entre 0 a 10 dias.
+
+```{r}
+#| fig-cap: 'Período entre fecha_inicio_sintomas y fecha_diagnostico reportado para Buenos Aires y CABA, en los casos donde ambos valores fueron reportados'
+ggplotly(
+dif_dias |> 
+  filter(dias_caso < 30, dias_caso > -7) |> 
+  group_by(dias_caso, carga_provincia_nombre) |> 
+  count() |> 
+  ggplot(aes(x = dias_caso,
+             y = n,
+             fill = carga_provincia_nombre)) +
+  geom_col() +
+  scale_fill_viridis_d()+
+  theme_minimal() +
+  ylab('Cantidad de observaciones') +
+  xlab('Diferencia entre fecha_inicio_sintomas y fecha_diagnostico')
+
+)
+
+```
+
+## Base de datos final
+
+- Debido a que los datos de movilidad ciudadana son del año 2020,
+se limita la base a ese período.
+- Considerando los casos descriptos anteriormente se tomaran las decisiones 
+resumidas @tbl-desicion para la creación de una nueva variable `fecha_enfermo`:
+
+
+|Caso |    Descripcion                                                 |  fecha_enfermo                             |  
+|:--|:-----------------------------------------------------------------|:---------------------------------------|
+| 1 | `fecha_inicio_sintomas` y `fecha_diagnostico` no reportadas      | Remover casos                     |   
+| 2 | `fecha_inicio_sintomas` reportada y `fecha_diagnostico` ausente  | Se considera `fecha_diagnostico`   |
+| 3 | `fecha_inicio_sintomas` ausente y `fecha_diagnostico` reportada  | Se considera `fecha_inicio_sintomas`   |
+| 4 | `fecha_inicio_sintomas` y `fecha_diagnostico` reportadas         | Se conserva `fecha_inicio_sintoma` |  
+
+: Desiciones para la creación de la variable `fecha_enfermo` {#tbl-desicion}
+
+- Para el caso 4, se eliminaron tambien los casos donde la diferencia entre
+`fecha_inicio_sintomas` y `fecha_diagnostico` era mayor a 30 o menor a -7.
+
+```{r}
+
+# periodo de analisis
+covid_inicio <- ymd("2020-03-01")
+covid_final <- ymd("2022-03-31")
+
+periodo <- function(x) {
+  covid_inicio <= x & covid_final >= x
+}
+
+covid_casos_muestra <-  covid_casos_muestra |> 
+  filter(if_all(starts_with('fecha_'),
+               ~ is.na(.x) | covid_inicio <= .x & covid_final >= .x))     
+
+base_covid_completa <- dif_dias_total_casos |> 
+                          # elimino casos donde la diferencia de dias entre 
+                          # fecha de sintomas y diagnostico es muy extrema
+                          filter(dias_caso < 30,
+                                 dias_caso > -7) |> 
+                          mutate(fecha_enfermo = case_when(
+                            # CASO 1
+                              !is.na(fecha_inicio_sintomas) &
+                              !is.na(fecha_diagnostico) ~ as.character(fecha_inicio_sintomas),
+                            # CASO 2
+                              is.na(fecha_inicio_sintomas) & 
+                              !is.na(fecha_diagnostico) ~ as.character(fecha_diagnostico),
+                            # CASO 3
+                              !is.na(fecha_inicio_sintomas) &
+                              is.na(fecha_diagnostico) ~ as.character(fecha_inicio_sintomas),
+                            # CASO 4
+                              is.na(fecha_inicio_sintomas) &
+                              is.na(fecha_diagnostico) ~ NA_character_)) |> 
+                              filter(fecha_enfermo <= as.Date('2020-12-31'),
+                                     fecha_enfermo >= as.Date('2020-03-01')) 
+
+
+base_covid_completa <- base_covid_completa |> 
+                          drop_na(fecha_enfermo) # remuevo el caso 1
+
+head(base_covid_completa)
+
+# guardo la base
+write_parquet(base_covid_completa, "data/procesada/covid_casos_baires_geocovid.parquet")
+
+```
