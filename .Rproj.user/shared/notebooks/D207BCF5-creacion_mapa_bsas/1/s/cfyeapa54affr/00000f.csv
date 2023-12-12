@@ -1,7 +1,0 @@
-"0","# Vemos que San Fernando esta compuesto por dos poligonos,"
-"0","# Uno es el delta, y deberiamos eliminarlo"
-"0",""
-"0","ggplot() +"
-"0","  geom_sf(data = subset(amba_reducido,"
-"0","                        partido == 'San Fernando'))+"
-"0","  theme_minimal()"

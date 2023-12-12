@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://fernandez-lab-wsu.github.io/geocovid_bsas/analisis_datos_covid.html</loc>
+    <lastmod>2023-12-12T18:19:43.045Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fernandez-lab-wsu.github.io/geocovid_bsas/index.html</loc>
+    <lastmod>2023-12-12T18:19:42.045Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fernandez-lab-wsu.github.io/geocovid_bsas/creacion_mapa_bsas.html</loc>
+    <lastmod>2023-12-12T18:19:39.819Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fernandez-lab-wsu.github.io/geocovid_bsas/calculo_movilidad_por_departamento.html</loc>
+    <lastmod>2023-12-12T18:17:57.877Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fernandez-lab-wsu.github.io/geocovid_bsas/LICENSE.html</loc>
+    <lastmod>2023-12-12T18:17:58.310Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fernandez-lab-wsu.github.io/geocovid_bsas/creacion_de_rasters.html</loc>
+    <lastmod>2023-12-12T18:19:41.511Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fernandez-lab-wsu.github.io/geocovid_bsas/CODIGO_DE_CONDUCTA.html</loc>
+    <lastmod>2023-12-12T18:19:42.604Z</lastmod>
+  </url>
+</urlset>

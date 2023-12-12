@@ -1,8 +1,0 @@
-"0",""
-"0","# Elimino el poligono extra"
-"0","amba_reducido <- amba_reducido[-30,]"
-"0",""
-"0","# Archivo vectorial final de AMBA"
-"0","ggplot() +"
-"0","  geom_sf(data = amba_reducido)+"
-"0","  theme_minimal()"

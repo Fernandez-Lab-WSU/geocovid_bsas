@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -30,6 +64,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<link href="./images/geocovid_bsas_favicon.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -71,6 +106,9 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    <img src="./images/geocovid_bsas_logo.png" alt="" class="navbar-logo">
+    </a>
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">GeoCovid Buenos Aires</span>
     </a>
@@ -120,7 +158,18 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#paquete-quadkeyr" id="toc-paquete-quadkeyr" class="nav-link active" data-scroll-target="#paquete-quadkeyr">Paquete <code>quadkeyr</code></a></li>
+  <li><a href="#leo-los-archivos" id="toc-leo-los-archivos" class="nav-link" data-scroll-target="#leo-los-archivos">1. Leo los archivos</a></li>
+  <li><a href="#convierto-los-quadkeys-en-coordenadas-del-mapa" id="toc-convierto-los-quadkeys-en-coordenadas-del-mapa" class="nav-link" data-scroll-target="#convierto-los-quadkeys-en-coordenadas-del-mapa">2. Convierto los QuadKeys en coordenadas del mapa</a></li>
+  <li><a href="#completar-la-grilla-de-quadkeys" id="toc-completar-la-grilla-de-quadkeys" class="nav-link" data-scroll-target="#completar-la-grilla-de-quadkeys">3. Completar la grilla de QuadKeys</a></li>
+  <li><a href="#crear-los-polígonos" id="toc-crear-los-polígonos" class="nav-link" data-scroll-target="#crear-los-polígonos">4. Crear los polígonos</a></li>
+  <li><a href="#generar-los-rasters-para-las-variables-de-interés" id="toc-generar-los-rasters-para-las-variables-de-interés" class="nav-link" data-scroll-target="#generar-los-rasters-para-las-variables-de-interés">5. Generar los rasters para las variables de interés</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -142,8 +191,134 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<hr>
+<p><strong>Input inicial</strong> - Archivos <code>.csv</code> con datos de movilidad ciudadana expresados por QuadKeys. Existe un archivo por locación y horario reportado.</p>
+<p><strong>Objetivo</strong> - Crear las imagenes rasters para cada caso expresando como atributo el cambio porcentual semanal y prepandemia.</p>
+<hr>
+<section id="paquete-quadkeyr" class="level2">
+<h2 class="anchored" data-anchor-id="paquete-quadkeyr">Paquete <code>quadkeyr</code></h2>
+<p>Los pasos que se describen aquí se encuentran detallados en <a href="https://fernandez-lab-wsu.github.io/quadkeyr/articles/create_rasters_from_grid.html">la viñeta del paquete <code>quadkeyr</code></a> que fue especificamente creado para la creación de los rasters.</p>
+</section>
+<section id="leo-los-archivos" class="level2">
+<h2 class="anchored" data-anchor-id="leo-los-archivos">1. Leo los archivos</h2>
+<p>Esta función me reporta los archivos faltantes en la serie de días y horarios.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>files <span class="ot">&lt;-</span> <span class="fu">read_all_files</span>(<span class="at">path_to_csvs =</span> <span class="st">"../geocovid/data/rasters/"</span>,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">colnames =</span> <span class="fu">c</span>(<span class="st">"lat"</span>, <span class="st">"lon"</span>, </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                                     <span class="st">"quadkey"</span>, <span class="st">"date_time"</span>, </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                                     <span class="st">"n_crisis"</span>, <span class="st">"percent_change"</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">coltypes =</span> <span class="fu">list</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">lat =</span> <span class="st">'d'</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                         <span class="at">lon =</span> <span class="st">'d'</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                         <span class="at">quadkey =</span> <span class="st">'i'</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                         <span class="at">date_time =</span> <span class="st">'T'</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                         <span class="at">n_crisis =</span> <span class="st">'c'</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                         <span class="at">percent_change =</span> <span class="st">'c'</span>)) </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>files</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Por ejemplo, estos fueron los faltantes para los datos de AMBA:</p>
+<pre><code>day time
+1  2020-07-03    0
+2  2020-07-04    0
+3  2020-07-05    0
+4  2020-07-06    0
+5  2020-07-07    0
+6  2020-07-08    0
+7  2020-07-09    0
+8  2020-07-10    0
+9  2020-07-11    0
+10 2020-07-12    0
+11 2020-09-12    0
+12 2020-09-13    0
+13 2020-07-03    8
+14 2020-07-04    8
+15 2020-07-05    8
+16 2020-07-06    8
+17 2020-07-07    8
+18 2020-07-08    8
+19 2020-07-09    8
+20 2020-07-10    8
+21 2020-07-11    8
+22 2020-07-12    8
+23 2020-09-12    8
+24 2020-09-13    8
+25 2020-07-03   16
+26 2020-07-04   16
+27 2020-07-05   16
+28 2020-07-06   16
+29 2020-07-07   16
+30 2020-07-08   16
+31 2020-07-09   16
+32 2020-07-10   16
+33 2020-07-11   16
+34 2020-09-12   16</code></pre>
+</section>
+<section id="convierto-los-quadkeys-en-coordenadas-del-mapa" class="level2">
+<h2 class="anchored" data-anchor-id="convierto-los-quadkeys-en-coordenadas-del-mapa">2. Convierto los QuadKeys en coordenadas del mapa</h2>
+<ul>
+<li><p>Tomo todos los QuadKeys que fueron reportados al menos una vez en mi lista de archivos <code>.csv</code> y los convierto en latitud y longitud.</p></li>
+<li><p>Este punto representa la ubicación del vértice de arriba a la izquierda de cada QuadKey.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>quadkeys <span class="ot">&lt;-</span>  <span class="fu">unique</span>(files<span class="sc">$</span>quadkey)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>qtll <span class="ot">&lt;-</span> <span class="fu">quadkey_to_latlong</span>(<span class="at">quadkeys =</span> quadkeys)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="completar-la-grilla-de-quadkeys" class="level2">
+<h2 class="anchored" data-anchor-id="completar-la-grilla-de-quadkeys">3. Completar la grilla de QuadKeys</h2>
+<ul>
+<li><p>Si bien un gran número de QuadKeys que son siempre reportados en todos los archivos, esto no es una constante.</p></li>
+<li><p>La función <code>regular_qk_grid</code> permite completar la grilla. Esta función devuelve una lista con 3 elementos: <code>data</code>, <code>num_rows</code> y <code>num_cols</code>.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>regular_grid <span class="ot">&lt;-</span> <span class="fu">regular_qk_grid</span>(qtll)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>regular_grid</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="crear-los-polígonos" class="level2">
+<h2 class="anchored" data-anchor-id="crear-los-polígonos">4. Crear los polígonos</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>polygrid <span class="ot">&lt;-</span> <span class="fu">grid_to_polygon</span>(regular_grid<span class="sc">$</span>data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="generar-los-rasters-para-las-variables-de-interés" class="level2">
+<h2 class="anchored" data-anchor-id="generar-los-rasters-para-las-variables-de-interés">5. Generar los rasters para las variables de interés</h2>
+<p>La función <code>apply_weekly_lag()</code> permite generar los datos de cambio porcentual semanal creando un lag de 7 días.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>polyvar <span class="ot">&lt;-</span> files <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>            dplyr<span class="sc">::</span><span class="fu">inner_join</span>(polygrid, <span class="at">by =</span> <span class="st">'quadkey'</span> ) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">apply_weekly_lag</span>() </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>polyvar7 <span class="ot">&lt;-</span>  polyvar <span class="sc">|&gt;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>               <span class="fu">drop_na</span>(percent_change_7)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Loas imagenes raster se crearan automaticamente para todos los archivos en la carpeta con el formato <code>&lt;nombre&gt;_&lt;fecha&gt;_&lt;hora&gt;.tif</code>. La función <code>polygon_to_raster</code> va a crear los raster incluso si hay algún archivo de la serie faltante.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># cambio porcentual prepandemia</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">polygon_to_raster</span>(<span class="at">data =</span> polyvar,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">nx =</span> grid<span class="sc">$</span>num_cols <span class="sc">+</span><span class="dv">1</span> ,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ny =</span> grid<span class="sc">$</span>num_rows <span class="sc">+</span><span class="dv">1</span> ,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">template =</span> polyvar,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">variable =</span> <span class="st">'percent_change'</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">filename =</span> <span class="st">'Baires'</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">path =</span> <span class="st">"data/"</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>                  )</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co"># cambio porcentual semanal</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="fu">polygon_to_raster</span>(<span class="at">data =</span> polyvar7,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">nx =</span> grid<span class="sc">$</span>num_cols <span class="sc">+</span><span class="dv">1</span> ,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ny =</span> grid<span class="sc">$</span>num_rows <span class="sc">+</span><span class="dv">1</span> ,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                  <span class="at">template =</span> polyvar7,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">variable =</span> <span class="st">'percent_change_7'</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>                  <span class="at">filename =</span> <span class="st">'Baires'</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>                  <span class="at">path =</span> <span class="st">"data/"</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>                  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

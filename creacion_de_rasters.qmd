@@ -1,3 +1,164 @@
 ---
 title: "Creación de imagenes raster"
 ---
+
+---
+
+**Input inicial**
+- Archivos `.csv` con datos de movilidad ciudadana expresados por QuadKeys.
+Existe un archivo por locación y horario reportado.
+
+**Objetivo**
+- Crear las imagenes rasters para cada caso expresando como atributo el cambio
+porcentual semanal y prepandemia.
+
+---
+
+## Paquete `quadkeyr`
+
+Los pasos que se describen aquí se encuentran detallados en [la viñeta del 
+paquete `quadkeyr`](https://fernandez-lab-wsu.github.io/quadkeyr/articles/create_rasters_from_grid.html) que fue especificamente creado para la creación de los
+rasters.
+
+
+## 1. Leo los archivos
+
+Esta función me reporta los archivos faltantes en la serie de días y horarios.
+
+```{r eval= FALSE, include = TRUE}
+
+files <- read_all_files(path_to_csvs = "../geocovid/data/rasters/",
+                        colnames = c("lat", "lon", 
+                                     "quadkey", "date_time", 
+                                     "n_crisis", "percent_change"),
+                        coltypes = list(
+                         lat = 'd',
+                         lon = 'd',
+                         quadkey = 'i',
+                         date_time = 'T',
+                         n_crisis = 'c',
+                         percent_change = 'c')) 
+
+files
+```
+
+Por ejemplo, estos fueron los faltantes para los datos de AMBA:
+
+```
+day time
+1  2020-07-03    0
+2  2020-07-04    0
+3  2020-07-05    0
+4  2020-07-06    0
+5  2020-07-07    0
+6  2020-07-08    0
+7  2020-07-09    0
+8  2020-07-10    0
+9  2020-07-11    0
+10 2020-07-12    0
+11 2020-09-12    0
+12 2020-09-13    0
+13 2020-07-03    8
+14 2020-07-04    8
+15 2020-07-05    8
+16 2020-07-06    8
+17 2020-07-07    8
+18 2020-07-08    8
+19 2020-07-09    8
+20 2020-07-10    8
+21 2020-07-11    8
+22 2020-07-12    8
+23 2020-09-12    8
+24 2020-09-13    8
+25 2020-07-03   16
+26 2020-07-04   16
+27 2020-07-05   16
+28 2020-07-06   16
+29 2020-07-07   16
+30 2020-07-08   16
+31 2020-07-09   16
+32 2020-07-10   16
+33 2020-07-11   16
+34 2020-09-12   16
+```
+
+## 2. Convierto los QuadKeys en coordenadas del mapa
+
+- Tomo todos los QuadKeys que fueron reportados al menos una vez en mi lista de 
+ archivos `.csv` y los convierto en latitud y longitud.
+
+- Este punto representa la ubicación del vértice de arriba a la izquierda 
+de cada QuadKey.
+
+```{r eval= FALSE, include = TRUE}
+
+quadkeys <-  unique(files$quadkey)
+
+qtll <- quadkey_to_latlong(quadkeys = quadkeys)
+
+```
+
+## 3. Completar la grilla de QuadKeys
+
+- Si bien un gran número de QuadKeys que son siempre reportados en todos los 
+archivos, esto no es una constante.
+
+- La función `regular_qk_grid` permite completar la grilla. Esta función
+devuelve una lista con 3 elementos: `data`, `num_rows` y `num_cols`.
+
+```{r eval= FALSE, include = TRUE}
+regular_grid <- regular_qk_grid(qtll)
+regular_grid
+```
+
+
+## 4. Crear los polígonos
+
+
+```{r eval= FALSE, include = TRUE}
+
+polygrid <- grid_to_polygon(regular_grid$data)
+
+```
+
+## 5. Generar los rasters para las variables de interés
+
+La función `apply_weekly_lag()` permite generar los datos de cambio porcentual
+semanal creando un lag de 7 días.
+
+```{r eval= FALSE, include = TRUE}
+polyvar <- files |>
+            dplyr::inner_join(polygrid, by = 'quadkey' ) |>
+            apply_weekly_lag() 
+
+polyvar7 <-  polyvar |>
+               drop_na(percent_change_7)
+```
+
+Loas imagenes raster se crearan automaticamente para todos los archivos en la
+carpeta con el formato `<nombre>_<fecha>_<hora>.tif`. La función 
+`polygon_to_raster` va a crear los raster incluso si hay algún archivo de la 
+serie faltante.
+
+```{r eval= FALSE, include = TRUE}
+# cambio porcentual prepandemia
+polygon_to_raster(data = polyvar,
+                  nx = grid$num_cols +1 ,
+                  ny = grid$num_rows +1 ,
+                  template = polyvar,
+                  variable = 'percent_change',
+                  filename = 'Baires',
+                  path = "data/"
+                  )
+
+# cambio porcentual semanal
+polygon_to_raster(data = polyvar7,
+                  nx = grid$num_cols +1 ,
+                  ny = grid$num_rows +1 ,
+                  template = polyvar7,
+                  variable = 'percent_change_7',
+                  filename = 'Baires',
+                  path = "data/"
+                  )
+```
+ 

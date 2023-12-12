@@ -2,6 +2,19 @@
 title: "Creación Mapas Buenos Aires"
 ---
 
+---
+
+**Input inicial**
+- Mapas vectoriales de provincia de Buenos Aires y AMBA
+
+**Objetivo**
+- Generar mapas de menor tamaño para que la aplicacion no tenga problemas de eficiencia.
+- Producir un mapa de Buenos Aires dónde no se diferencien las comunas de CABA.
+- Obtener los centroides de los departamentos de provincia de Buenos Aires
+
+---
+
+
 ```{r setup}
 library(tidyverse)
 library(stringr)

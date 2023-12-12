@@ -1,3 +1,15 @@
 ---
 title: "Cálculo de movilidad por departamento de la provincia"
 ---
+
+---
+
+**Input inicial**
+- Imagenes rasters `.tif` de cambio porcentual semanal y prepandemia para
+locación, dia y horario reportado generadas en 'Creacion de rasters'.
+
+**Objetivo**
+- Obtener los valores promedio de movilidad ciudadana para cada imagen raster
+expresados por departamento de provincia de Buenos Aires.
+
+---

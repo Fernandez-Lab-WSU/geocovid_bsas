@@ -1,3 +1,14 @@
 ---
 title: "Análisis de datos de COVID-19"
 ---
+
+
+---
+
+**Input inicial**
+Base de datos `csv` pública de casos de COVID-19 en Argentina.
+
+**Objetivo**
+Obtener una base de datos limplia y lista de usar en GeoCovid app.
+
+---
