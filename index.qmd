@@ -2,7 +2,7 @@
 title: "GeoCovid Buenos Aires"
 ---
 
-# GeoCovid Buenos Aires <img src="imagenes/geocovid_bsas_logo.png" align="right" height="150" />
+# <img src="imagenes/geocovid_bsas_logo.png" align="right" height="150" />
 
   Este repositorio contiene cuatro reportes que recopilan el procesamiento de 
   los datos de COVID-19, movilidad ciudadana, mapas vectoriales e imágenes 
