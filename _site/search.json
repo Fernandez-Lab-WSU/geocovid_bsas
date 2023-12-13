@@ -30,35 +30,35 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "GeoCovid Buenos Aires ",
+    "title": "",
     "section": "",
-    "text": "Quarto Publish\n\n\nEste repositorio contiene cuatro reportes que recopilan el procesamiento de los datos de COVID-19, movilidad ciudadana, mapas vectoriales e imágenes raster para provincia de Buenos Aires en el marco de la creación de la aplicación GeoCovid app Buenos Aires.\n\n\n\n\n\nLos mapas de las comunas de Ciudad Autónoma de Buenos Aires fueron descargados de BA Data, mientras que los poligonos correspondientes a los partidos de provincia de Buenos Aires se descargaron del Instituto Geográfico Nacional Argentino.\n\n\n\n\n\nSe analizaron unicamente datos para prov. de Buenos Aires.\nSe crean nuevas variables para su uso en GeoCovid app.\nArchivo historico de casos de COVID-19 registrados desde el 01/03/2020 hasta el 04/06/2022 - Dirección Nacional de Epidemiología y Análisis de Situación de Salud.\nEstos datos son públicos y fueron consultados en Julio de 2023 en www.datos.salud.gob.ar.\n\n\n\n\n\nLos datos de movilidad ciudadana fueron brindados por Data for Good - Meta\nEl procesamiento de los datos y la generacion de los rasters fue realizado usando el paquete quadkeyr.\n\n\n\n\n\nLos datos de movilidad ciudadana fueron brindados por Data for Good - Meta y se promediaron para los mapas vectoriales de prov. de Buenos Aires mencionados en el punto 1.\n\n\n\n\n\nEl paquete quadkeyr, GeoCovid Buenos Aires y GeoCovid App son parte del mismo proyecto.\n\nPaquete quadkeyr Permite el analisis de datos de movilidad ciudadana de Meta y su conversión a imagenes raster.\nGeoCovid app Dashboard que permite la visualización de datos de COVID-19 y movilidad ciudadana en conjunto.\n\n\n\n\n\nEl código contenido en este repositorio se encuentra bajo una licencia MIT.\nEl informe contenido en este documento es compartido bajo una licencia Atribución-NoComercial-CompartirIgual 4.0 Internacional. Consulte el archivo de licencia para obtener más información. Si reutiliza información de este reporte proporcione la atribución y el enlace a esta página web empleando esta cita:\n\n\nD’Andrea, F. GeoCovid Buenos Aires [Computer software]. Dr. Fernandez Lab. Washington State University. https://github.com/Fernandez-Lab-WSU/geocovid_bsas\n\n\n\n\nEl proyecto GeoCovid Buenos Aires, GeoCovid app y el paquete quadkeyr se encuentran bajo un Código de Conducta."
+    "text": "Este repositorio contiene cuatro reportes que recopilan el procesamiento de los datos de COVID-19, movilidad ciudadana, mapas vectoriales e imágenes raster para provincia de Buenos Aires en el marco de la creación de la aplicación GeoCovid app Buenos Aires.\n\n\n\n\n\nLos mapas de las comunas de Ciudad Autónoma de Buenos Aires fueron descargados de BA Data, mientras que los poligonos correspondientes a los partidos de provincia de Buenos Aires se descargaron del Instituto Geográfico Nacional Argentino.\n\n\n\n\n\nSe analizaron unicamente datos para prov. de Buenos Aires.\nSe crean nuevas variables para su uso en GeoCovid app.\nArchivo historico de casos de COVID-19 registrados desde el 01/03/2020 hasta el 04/06/2022 - Dirección Nacional de Epidemiología y Análisis de Situación de Salud.\nEstos datos son públicos y fueron consultados en Julio de 2023 en www.datos.salud.gob.ar.\n\n\n\n\n\nLos datos de movilidad ciudadana fueron brindados por Data for Good - Meta\nEl procesamiento de los datos y la generacion de los rasters fue realizado usando el paquete quadkeyr.\n\n\n\n\n\nLos datos de movilidad ciudadana fueron brindados por Data for Good - Meta y se promediaron para los mapas vectoriales de prov. de Buenos Aires mencionados en el punto 1.\n\n\n\n\n\nEl paquete quadkeyr, GeoCovid Buenos Aires y GeoCovid App son parte del mismo proyecto.\n\nPaquete quadkeyr Permite el analisis de datos de movilidad ciudadana de Meta y su conversión a imagenes raster.\nGeoCovid app Dashboard que permite la visualización de datos de COVID-19 y movilidad ciudadana en conjunto.\n\n\n\n\n\nEl código contenido en este repositorio se encuentra bajo una licencia MIT.\nEl informe contenido en este documento es compartido bajo una licencia Atribución-NoComercial-CompartirIgual 4.0 Internacional. Consulte el archivo de licencia para obtener más información. Si reutiliza información de este reporte proporcione la atribución y el enlace a esta página web empleando esta cita:\n\n\nD’Andrea, F. GeoCovid Buenos Aires [Computer software]. Dr. Fernandez Lab. Washington State University. https://github.com/Fernandez-Lab-WSU/geocovid_bsas\n\n\n\n\nEl proyecto GeoCovid Buenos Aires, GeoCovid app y el paquete quadkeyr se encuentran bajo un Código de Conducta."
   },
   {
     "objectID": "index.html#reportes",
     "href": "index.html#reportes",
-    "title": "GeoCovid Buenos Aires ",
+    "title": "",
     "section": "",
     "text": "Los mapas de las comunas de Ciudad Autónoma de Buenos Aires fueron descargados de BA Data, mientras que los poligonos correspondientes a los partidos de provincia de Buenos Aires se descargaron del Instituto Geográfico Nacional Argentino.\n\n\n\n\n\nSe analizaron unicamente datos para prov. de Buenos Aires.\nSe crean nuevas variables para su uso en GeoCovid app.\nArchivo historico de casos de COVID-19 registrados desde el 01/03/2020 hasta el 04/06/2022 - Dirección Nacional de Epidemiología y Análisis de Situación de Salud.\nEstos datos son públicos y fueron consultados en Julio de 2023 en www.datos.salud.gob.ar.\n\n\n\n\n\nLos datos de movilidad ciudadana fueron brindados por Data for Good - Meta\nEl procesamiento de los datos y la generacion de los rasters fue realizado usando el paquete quadkeyr.\n\n\n\n\n\nLos datos de movilidad ciudadana fueron brindados por Data for Good - Meta y se promediaron para los mapas vectoriales de prov. de Buenos Aires mencionados en el punto 1."
   },
   {
     "objectID": "index.html#proyectos-relacionados",
     "href": "index.html#proyectos-relacionados",
-    "title": "GeoCovid Buenos Aires ",
+    "title": "",
     "section": "",
     "text": "El paquete quadkeyr, GeoCovid Buenos Aires y GeoCovid App son parte del mismo proyecto.\n\nPaquete quadkeyr Permite el analisis de datos de movilidad ciudadana de Meta y su conversión a imagenes raster.\nGeoCovid app Dashboard que permite la visualización de datos de COVID-19 y movilidad ciudadana en conjunto."
   },
   {
     "objectID": "index.html#licencias",
     "href": "index.html#licencias",
-    "title": "GeoCovid Buenos Aires ",
+    "title": "",
     "section": "",
     "text": "El código contenido en este repositorio se encuentra bajo una licencia MIT.\nEl informe contenido en este documento es compartido bajo una licencia Atribución-NoComercial-CompartirIgual 4.0 Internacional. Consulte el archivo de licencia para obtener más información. Si reutiliza información de este reporte proporcione la atribución y el enlace a esta página web empleando esta cita:\n\n\nD’Andrea, F. GeoCovid Buenos Aires [Computer software]. Dr. Fernandez Lab. Washington State University. https://github.com/Fernandez-Lab-WSU/geocovid_bsas"
   },
   {
     "objectID": "index.html#código-de-conducta",
     "href": "index.html#código-de-conducta",
-    "title": "GeoCovid Buenos Aires ",
+    "title": "",
     "section": "",
     "text": "El proyecto GeoCovid Buenos Aires, GeoCovid app y el paquete quadkeyr se encuentran bajo un Código de Conducta."
   },
