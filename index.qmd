@@ -1,8 +1,6 @@
----
-title: "GeoCovid Buenos Aires"
----
+# GeoCovid Buenos Aires <img src="imagenes/geocovid_bsas_logo.png" align="right" height="150" />
 
-<img src="imagenes/geocovid_bsas_logo.png" align="right" height="150" />
+[![Quarto Publish](https://github.com/Fernandez-Lab-WSU/geocovid_bsas/actions/workflows/publish.yaml/badge.svg)](https://github.com/Fernandez-Lab-WSU/geocovid_bsas/actions/workflows/publish.yaml)
 
   Este repositorio contiene cuatro reportes que recopilan el procesamiento de 
   los datos de COVID-19, movilidad ciudadana, mapas vectoriales e imágenes 
@@ -62,9 +60,12 @@ Consulte el archivo de licencia para obtener más información.
 Si reutiliza información de este reporte proporcione la atribución y el enlace
 a esta página web empleando esta cita:
 
-> TBD
+> D'Andrea, F. GeoCovid Buenos Aires [Computer software].
+> Dr. Fernandez Lab. Washington State University.
+> https://github.com/Fernandez-Lab-WSU/geocovid_bsas
 
 ## Código de Conducta
 
 El proyecto GeoCovid Buenos Aires, GeoCovid app y el paquete `quadkeyr`
 se encuentran bajo un [Código de Conducta](https://www.contributor-covenant.org/es/version/1/4/code-of-conduct/). 
+
