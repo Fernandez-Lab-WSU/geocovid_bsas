@@ -1,4 +1,8 @@
-# <img src="imagenes/geocovid_bsas_logo.png" align="right" height="150" />
+---
+title: "GeoCovid Buenos Aires"
+---
+
+# GeoCovid Buenos Aires <img src="imagenes/geocovid_bsas_logo.png" align="right" height="150" />
 
   Este repositorio contiene cuatro reportes que recopilan el procesamiento de 
   los datos de COVID-19, movilidad ciudadana, mapas vectoriales e imágenes 
@@ -66,4 +70,3 @@ a esta página web empleando esta cita:
 
 El proyecto GeoCovid Buenos Aires, GeoCovid app y el paquete `quadkeyr`
 se encuentran bajo un [Código de Conducta](https://www.contributor-covenant.org/es/version/1/4/code-of-conduct/). 
-
