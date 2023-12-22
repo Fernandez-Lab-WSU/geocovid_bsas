@@ -8,7 +8,7 @@
   la aplicación GeoCovid app.
 
 ## Reportes
-#### 1. [Creación de los mapas vectoriales de Buenos Aires y sus centroides](https://fernandez-lab-wsu.github.io/geocovid_bsas/creacion_mapa_bsas.html)
+#### 1. [Mapas vectoriales de Buenos Aires y sus centroides](https://fernandez-lab-wsu.github.io/geocovid_bsas/creacion_mapa_bsas.html)
 
 - Los mapas de las comunas de Ciudad Autónoma de Buenos Aires
 fueron descargados de [BA Data](https://data.buenosaires.gob.ar/dataset/comunas/resource/Juqdkmgo-612222-resource), 
@@ -26,7 +26,7 @@ del [Instituto Geográfico Nacional Argentino](https://www.ign.gob.ar/NuestrasAc
 el 04/06/2022 - [Dirección Nacional de Epidemiología y Análisis de Situación de Salud](https://datos.gob.ar/dataset/salud-covid-19-casos-registrados-republica-argentina/archivo/salud_fd657d02-a33a-498b-a91b-2ef1a68b8d16).  
 Estos datos son públicos y fueron consultados en Julio de 2023 en [www.datos.salud.gob.ar](http://datos.salud.gob.ar/dataset/covid-19-casos-registrados-en-la-republica-argentina).
 
-#### 3. [Creación de imagenes raster](https://fernandez-lab-wsu.github.io/geocovid_bsas/creacion_de_rasters.html)
+#### 3. [Imágenes raster de movilidad ciudadana](https://fernandez-lab-wsu.github.io/geocovid_bsas/creacion_de_rasters.html)
 
 - Los datos de movilidad ciudadana fueron brindados por
 [Data for Good - Meta](https://dataforgood.facebook.com/)

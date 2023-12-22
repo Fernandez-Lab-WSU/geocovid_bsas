@@ -185,8 +185,29 @@ bsas_caba <- st_read('data/procesada/bsas_caba.gpkg')
 library(rmapshaper)
 bsas_caba_simple <- rmapshaper::ms_simplify(bsas_caba)
 
-st_write(bsas_caba_simple, "data/procesada/bsas_caba_simple.gpkg", append=FALSE)
 
+
+```
+
+### Incluyo coordenadas de la bounding box 
+
+Realizo este paso para que sea más sencillo hacer el zoom en el mapa.
+
+```{r}
+# Agrego coordenadas al mapa de BsAs que voy a necesitar
+# para hacer zoom en la app
+
+
+for(i in seq_along(1:nrow(bsas_caba_simple))){
+  
+  bsas_caba_simple[i, "lat1"] <- sf::st_bbox(bsas_caba_simple[i,])$ymin
+  bsas_caba_simple[i,"lat2"] <- sf::st_bbox(bsas_caba_simple[i,])$ymax
+  bsas_caba_simple[i, "lng1"] <- sf::st_bbox(bsas_caba_simple[i,])$xmin
+  bsas_caba_simple[i, "lng2"] <- sf::st_bbox(bsas_caba_simple[i,])$xmax
+  
+}
+
+st_write(bsas_caba_simple, "data/procesada/bsas_final.gpkg", append=FALSE)
 
 ```
 
