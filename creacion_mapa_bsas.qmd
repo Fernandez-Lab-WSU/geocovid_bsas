@@ -139,7 +139,8 @@ ggplot() +
   geom_sf(data = bsas)+
   theme_minimal()
 
-write_sf(bsas, 'data/procesada/bsas.gpkg')
+# Llamo al archivo bsas_comunas ya que presenta las comunas de CABA
+write_sf(bsas, 'data/procesada/bsas_comunas.gpkg')
 ```
 
 ### Unifico las comunas
@@ -170,7 +171,10 @@ write_sf(bsas, 'data/procesada/bsas.gpkg')
                               partido == 'Capital Federal')) + 
         theme_minimal()
 
-write_sf(bsas_caba, 'data/procesada/bsas_caba.gpkg')
+# Llamo a este archivo bsas ya que no presenta la division interna de CABA
+# en comunas
+ 
+write_sf(bsas_caba, 'data/procesada/bsas.gpkg')
 ```
 
 ### Simplifico los poligonos para agilizar la app
