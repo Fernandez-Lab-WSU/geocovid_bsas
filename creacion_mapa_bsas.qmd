@@ -226,10 +226,31 @@ ggplot() +
   geom_sf(data = cent) +
   theme_minimal()
 
+```
+
+
+```{r}
+# Cambio nombres de partidos para evitar problemas al momento de hacer joins
+cent[78,'partido'] <- 'Lomas De Zamora'
+cent[132,'partido'] <- 'Tres De Febrero'
+
+
+cent <- cent |>
+         # salgo del formato sf: calculo lat y long como variables separadas
+          cbind(sf::st_coordinates(cent)) |>
+          dplyr::arrange(partido) |> 
+          select(-lat1, -lat2, -lng1, -lng2)
+
+# elimino el formato sf
+sf::st_geometry(cent) <-  NULL
+
+cent
+```
+
+
+```{r}
 # guardo los centroides
-st_write(cent, "data/procesada/centroides_mapa.gpkg", append=FALSE)
-
-
+write.csv(cent, "data/procesada/centroides_mapa.csv")
 ```
 
 

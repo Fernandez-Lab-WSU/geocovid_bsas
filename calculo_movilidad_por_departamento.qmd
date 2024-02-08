@@ -35,8 +35,11 @@ de Buenos Aires y la ubicación de los archivos en el sistema.
 
 ```{r}
 
-# Leo todos los archivos de la carpeta
-all_files <- list.files("data/inicial/")
+# Leo todos los archivos de la carpeta con rasters de ejemplo
+ all_files <- list.files("data/inicial/")
+
+# Datos reales
+# all_files <- list.files("../geocovid/data/rasters/")
 
 # Filtro los archivos que terminan con '.tif'
 base_raster <- all_files[grep(".tif$",
@@ -55,7 +58,7 @@ base_raster <- all_files[grep(".tif$",
                                            hora == 8 ~ "mañana",
                                            hora == 16 ~ "tarde"))
 
-# Format the date to "YYYY-MM-DD" format
+# formato de fecha
 formatted_date <- format("2020-05-10", format = "%Y-%m-%d")
 
 bsas <-  sf::st_read("data/procesada/bsas_caba_simple.gpkg")
@@ -64,6 +67,8 @@ base_raster_baires <- base_raster |>
   dplyr::filter(locacion == 'baires') |> #elimina valores de amba que coinciden
   dplyr::cross_join(bsas) |>
   dplyr::mutate(file = paste0('data/inicial/', value)) |>
+ # datos reales
+ # dplyr::mutate(file = paste0('../geocovid/data/rasters/', value)) |>
   sf::st_as_sf()
 
 ```
@@ -121,9 +126,9 @@ Las variables `px_mean_dianoche` y `noche_0` se convierten en categóricas.
 
 ```{r}
   px_bsas <-  px_baires_w  |>
-         dplyr::filter(fecha == '2020-05-06',
-                      tipo_de_raster == 'pc'
-                      ) |>
+           # dplyr::filter(fecha == '2020-05-06',
+           #            tipo_de_raster == 'pc'
+           #            ) |>
          dplyr::mutate(criterio = case_when(px_mean_dianoche > 40 ~ "mas de 40",
                                      40 > px_mean_dianoche &
                                        px_mean_dianoche > 30 ~ "40 - 30",
@@ -188,9 +193,10 @@ Las variables `px_mean_dianoche` y `noche_0` se convierten en categóricas.
                                                    "menor a -40"))) |>
   st_as_sf()
 
+
+#write_sf(px_bsas, "data/procesada/px_baires_demo_app.gpkg")
+
 ```
-
-
 
 ## 3. Mapa de provincia de Buenos Aires
 
