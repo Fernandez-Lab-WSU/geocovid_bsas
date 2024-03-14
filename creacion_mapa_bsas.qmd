@@ -106,7 +106,7 @@ Este es el archivo con los poligonos finales seleccionados para AMBA
 
 ## guardo el archivo
 
-st_write(amba, "data/procesada/amba_ampliado.gpkg", append = FALSE)
+st_write(amba_reducido, "data/procesada/amba_reducido.gpkg", append = FALSE)
 
 ```
 
@@ -180,7 +180,7 @@ write_sf(bsas_caba, 'data/procesada/bsas.gpkg')
 ### Simplifico los poligonos para agilizar la app
 
 ```{r}
-bsas_caba <- st_read('data/procesada/bsas_caba.gpkg')
+bsas_caba <- st_read('data/procesada/bsas.gpkg')
 
 # Es posible emplear la funcion st_simplify para esto mismo, pero no conserva
 # tan bien la topografia entre los poligonos, es por ello que uso este paquete
