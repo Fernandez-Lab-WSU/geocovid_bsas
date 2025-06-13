@@ -1,0 +1,33 @@
+ # Configurar la variable PGPASSWORD en la terminal antes de correr
+$env:PGPASSWORD =  ####
+
+# Append postrgres to path
+$env:PATH += ";C:\Program Files\PostgreSQL\16\bin" 
+$env:PATH += ";C:\Program Files\PostgreSQL\16\lib" 
+$env:PATH += ";C:\Program Files\PostgreSQL\16\share\contrib\postgis-3.4\proj\proj.db"
+
+# Database connection parameters
+$DBNAME="geocovidapp_db"
+$USER=###
+$PORT=###
+
+$PGPASSWORD
+
+# Define variables
+$RASTER_DIRECTORY = "C:\Users\florencia\Documents\rasters\rasters_amba\amba_pc\"
+$RASTER_FILES = Get-ChildItem -Path $RASTER_DIRECTORY -Filter "*.tif"
+$RASTER_FULLPATH = Get-ChildItem -Path $RASTER_DIRECTORY -Filter "*.tif" | ForEach-Object {Join-Path -Path $RASTER_DIRECTORY -ChildPath $_.Name}
+
+# Loop through raster files
+foreach ($RASTER_FILE in $RASTER_FULLPATH) {
+    # Get raster file name without path and extension
+    $RASTER_NAME = [System.IO.Path]::GetFileNameWithoutExtension($RASTER_FILE)
+
+    # Insert raster data into PostGIS table
+
+    raster2pgsql -a -s 4326 -I -F $RASTER_FILE raster_schema.rasters | psql -d $DBNAME -U $USER -p $PORT 
+
+    # Optional: Add metadata to the inserted record
+    # psql -d $DBNAME -U $USER -p $PORT -c "UPDATE SET filename = 'Raster $RASTER_NAME', description = 'Description for $RASTER_NAME' WHERE rast ~* '$RASTER_NAME';"
+}
+ 

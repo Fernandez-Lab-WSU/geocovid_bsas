@@ -1,4 +1,5 @@
 Version: 1.0
+ProjectId: 58135296-eeb3-4ba7-b2fc-2e945cadfaf5
 
 RestoreWorkspace: Default
 SaveWorkspace: Default
@@ -11,3 +12,5 @@ Encoding: UTF-8
 
 RnwWeave: Knitr
 LaTeX: pdfLaTeX
+
+BuildType: Makefile

@@ -2,30 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://fernandez-lab-wsu.github.io/geocovid_bsas/analisis_datos_covid.html</loc>
-    <lastmod>2024-02-08T18:53:53.571Z</lastmod>
+    <lastmod>2025-06-13T17:54:49.020Z</lastmod>
   </url>
   <url>
     <loc>https://fernandez-lab-wsu.github.io/geocovid_bsas/index.html</loc>
-    <lastmod>2024-02-08T18:53:52.091Z</lastmod>
+    <lastmod>2025-06-13T17:54:47.510Z</lastmod>
   </url>
   <url>
     <loc>https://fernandez-lab-wsu.github.io/geocovid_bsas/creacion_mapa_bsas.html</loc>
-    <lastmod>2024-02-08T18:53:51.022Z</lastmod>
+    <lastmod>2025-06-13T17:54:46.393Z</lastmod>
   </url>
   <url>
     <loc>https://fernandez-lab-wsu.github.io/geocovid_bsas/calculo_movilidad_por_departamento.html</loc>
-    <lastmod>2024-02-08T18:53:49.940Z</lastmod>
+    <lastmod>2025-06-13T17:54:45.159Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fernandez-lab-wsu.github.io/geocovid_bsas/base_de_datos.html</loc>
+    <lastmod>2025-06-13T17:54:44.249Z</lastmod>
   </url>
   <url>
     <loc>https://fernandez-lab-wsu.github.io/geocovid_bsas/LICENSE.html</loc>
-    <lastmod>2024-02-08T18:53:50.342Z</lastmod>
+    <lastmod>2025-06-13T17:54:45.635Z</lastmod>
   </url>
   <url>
     <loc>https://fernandez-lab-wsu.github.io/geocovid_bsas/creacion_de_rasters.html</loc>
-    <lastmod>2024-02-08T18:53:51.651Z</lastmod>
+    <lastmod>2025-06-13T17:54:47.050Z</lastmod>
   </url>
   <url>
     <loc>https://fernandez-lab-wsu.github.io/geocovid_bsas/CODIGO_DE_CONDUCTA.html</loc>
-    <lastmod>2024-02-08T18:53:52.530Z</lastmod>
+    <lastmod>2025-06-13T17:54:47.965Z</lastmod>
   </url>
 </urlset>

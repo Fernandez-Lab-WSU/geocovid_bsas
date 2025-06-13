@@ -52,6 +52,33 @@ a imagenes raster.
 Dashboard que permite la visualización de datos de COVID-19 y 
 movilidad ciudadana en conjunto.
 
+## Make
+
+- Open a terminal or command prompt.
+- Navigate to the directory containing the Makefile and your R scripts.
+- Run the make command:
+
+```bash
+make all
+```
+This will execute the default target all, which in turn runs both
+`amba_final_files` and `baires_final_files` targets. 
+These targets run all the necessary R scripts with their
+respective input files, producing the final output files.
+
+If you want to run a specific target,
+you can do so by specifying it explicitly:
+
+```bash
+make amba_final_files
+```
+or
+
+```bash
+make baires_final_files
+```
+This will execute only the specified target, either for AMBA or BAIRES.
+
 ## Licencias
 
 - El código contenido en este repositorio se encuentra bajo una [licencia MIT](https://github.com/Fernandez-Lab-WSU/geocovid_bsas/blob/main/LICENSE.md). 

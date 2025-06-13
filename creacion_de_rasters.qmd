@@ -18,29 +18,37 @@ porcentual semanal y prepandemia.
 ## Paquete `quadkeyr`
 
 Los pasos que se describen aquí se encuentran detallados en [la viñeta del 
-paquete `quadkeyr`](https://fernandez-lab-wsu.github.io/quadkeyr/articles/create_rasters_from_grid.html) que fue especificamente creado para la creación de los
-rasters.
-
+paquete `quadkeyr`](https://fernandez-lab-wsu.github.io/quadkeyr/articles/create_rasters_from_grid.html)
+que fue especificamente creado para la creación de los rasters.
 
 ## 1. Leo los archivos
 
 Esta función me reporta los archivos faltantes en la serie de días y horarios.
 
+### Buenos Aires
+
 ```{r eval= FALSE, include = TRUE}
-
-files <- read_all_files(path_to_csvs = "../geocovid/data/rasters/",
-                        colnames = c("lat", "lon", 
-                                     "quadkey", "date_time", 
-                                     "n_crisis", "percent_change"),
-                        coltypes = list(
-                         lat = 'd',
-                         lon = 'd',
-                         quadkey = 'i',
-                         date_time = 'T',
-                         n_crisis = 'c',
-                         percent_change = 'c')) 
-
-files
+  library(quadkeyr)
+  
+  files <- read_fb_mobility_files(
+    path_to_csvs = "../Desktop/Facebook data/BsAs_facebookpop/",
+    colnames = c(
+      "lat",
+      "lon",
+      "quadkey",
+      "date_time",
+      "n_crisis",
+      "percent_change"
+    ),
+    coltypes = list(
+      lat = 'd',
+      lon = 'd',
+      quadkey = 'c',
+      date_time = 'T',
+      n_crisis = 'c',
+      percent_change = 'c'
+    )
+  )
 ```
 
 Por ejemplo, estos fueron los faltantes para los datos de AMBA:
@@ -93,11 +101,42 @@ de cada QuadKey.
 
 ```{r eval= FALSE, include = TRUE}
 
-quadkeys <-  unique(files$quadkey)
+  regular_grid <- get_regular_polygon_grid(data = files)
+  files_polygons <- files |> 
+    dplyr::inner_join(regular_grid$data, 
+                          by = c("quadkey")) 
 
-qtll <- quadkey_to_latlong(quadkeys = quadkeys)
 
 ```
+
+
+```{r}
+    # Generate the raster files                       
+  polygon_to_raster(data = files_polygons,
+                    nx = regular_grid$num_cols,
+                    ny = regular_grid$num_rows,
+                    template = files_polygons,
+                    var = 'percent_change',
+                    filename = 'BuenosAires',
+                    path = "../Desktop/Facebook data/rasters_baires/")
+```
+
+
+```{r}
+  # 7 days
+  files_polygons_7 <- files_polygons |>
+    apply_weekly_lag()
+  
+  # Generate the raster files                       
+  polygon_to_raster(data = files_polygons,
+                    nx = regular_grid$num_cols,
+                    ny = regular_grid$num_rows,
+                    template = files_polygons,
+                    var = 'percent_change',
+                    filename = 'BuenosAires',
+                    path = "../Desktop/Facebook data/rasters_baires/")
+```
+
 
 ## 3. Completar la grilla de QuadKeys
 
@@ -163,3 +202,155 @@ polygon_to_raster(data = polyvar7,
                   )
 ```
  
+### AMBA
+
+```{r}
+library(quadkeyr)
+
+files <- read_fb_mobility_files(
+  path_to_csvs = "../../Desktop/Facebook data/AMBA_facebookpop/",
+  keep_format = "country",
+  colnames = c(
+    "lat",
+    "lon",
+    "quadkey",
+    "country",
+    "date_time",
+    "n_crisis",
+    "percent_change"
+  ),
+  coltypes = list(
+    lat = 'd',
+    lon = 'd',
+    quadkey = 'c',
+    country = 'c',
+    date_time = 'T',
+    n_crisis = 'c',
+    percent_change = 'c'
+  )
+)
+```
+
+Aparentemente hay algunos quadkeys problemáticos porque tienen errores,
+los elimino.
+
+```{r}
+# remuevo los datos problematicos.
+error_scinot <- subset(files, 
+                       quadkey == "2.10321E+15     ")
+
+# Aparece un error, de un numero que no pudo ser convertido a quadkey,
+# lo separo y lo guardo
+
+write.csv(error_scinot, 
+          "data/remove_quadkeys_amba.csv")
+
+# dejo solo los quadkeys reportados para argentina
+# asi remuevo otros que aparecen para uruguay o en el mar
+files = subset(files,
+               country == 'AR')
+# remuevo los datos problematicos.
+files = subset(files, 
+               quadkey != "2.10321E+15     ")
+```
+
+Obtengo la grilla con los QuadKeys
+
+```{r}
+library(sf)
+amba <- st_read('data/amba_reducido.gpkg')
+
+joined_data <- st_join(regular_grid$data,
+                       amba,
+                       left = FALSE)
+
+files_polygons <- files |> 
+  dplyr::inner_join(joined_data, 
+                    by = c("quadkey")) 
+
+regular_grid <- get_regular_polygon_grid(data = files)
+regular_grid
+```
+
+Cargo el mapa vectorial de AMBA y dejo solo los polígonos que estan incluidos.
+
+```{r}
+
+
+```
+
+En `joined_data` tengo los polígonos incluidos en AMBA
+
+```{r}
+
+
+# Generate the raster files                       
+polygon_to_raster(data = files_polygons,
+                  nx = regular_grid$num_cols,
+                  ny = regular_grid$num_rows,
+                  template = files_polygons,
+                  var = 'percent_change',
+                  filename = 'AMBA',
+                  path = "rasters_amba/")
+```
+
+
+```{r}
+# 7 days
+files_polygons_7 <- files_polygons |>
+  apply_weekly_lag()
+
+# Generate the raster files                       
+polygon_to_raster(data = files_polygons_7,
+                  nx = regular_grid$num_cols,
+                  ny = regular_grid$num_rows,
+                  template = files_polygons_7,
+                  var = 'percent_change_7',
+                  filename = 'AMBA7',
+                  path = "../Desktop/Facebook data/rasters_amba/")
+```
+
+## Subida de los archivos a PostgreSQL
+
+Extraido de https://sysadminguides.org/2017/05/02/how-to-pass-credentials-in-powershell/
+
+```
+ # Configurar la variable PGPASSWORD en la terminal antes de correr
+$env:PGPASSWORD = "####"
+
+# Append postrgres to path
+$env:PATH += ";C:\Program Files\PostgreSQL\16\bin" 
+$env:PATH += ";C:\Program Files\PostgreSQL\16\lib" 
+$env:PATH += ";C:\Program Files\PostgreSQL\16\share\contrib\postgis-3.4\proj\proj.db"
+
+# Database connection parameters
+$DBNAME="geocovidapp_db"
+$USER="####"
+$PORT="####"
+
+$PGPASSWORD
+
+# Define variables
+$RASTER_DIRECTORY = "C:\Users\florencia\Documents\rasters\rasters_amba\amba_pc\"
+$RASTER_FILES = Get-ChildItem -Path $RASTER_DIRECTORY -Filter "*.tif"
+$RASTER_FULLPATH = Get-ChildItem -Path $RASTER_DIRECTORY -Filter "*.tif" | ForEach-Object {Join-Path -Path $RASTER_DIRECTORY -ChildPath $_.Name}
+
+# Loop through raster files
+foreach ($RASTER_FILE in $RASTER_FULLPATH) {
+    # Get raster file name without path and extension
+    $RASTER_NAME = [System.IO.Path]::GetFileNameWithoutExtension($RASTER_FILE)
+
+    # Insert raster data into PostGIS table
+
+    raster2pgsql -a -s 4326 -I -F $RASTER_FILE raster_schema.rasters | psql -d $DBNAME -U $USER -p $PORT 
+
+    # Optional: Add metadata to the inserted record
+    # psql -d $DBNAME -U $USER -p $PORT -c "UPDATE SET filename = 'Raster $RASTER_NAME', description = 'Description for $RASTER_NAME' WHERE rast ~* '$RASTER_NAME';"
+}
+ 
+```
+
+Click izquierdo en el archivo y selecciono `run with PowerShell` 
+
+
+

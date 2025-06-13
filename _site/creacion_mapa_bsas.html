@@ -170,6 +170,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#unifico-las-comunas" id="toc-unifico-las-comunas" class="nav-link" data-scroll-target="#unifico-las-comunas">Unifico las comunas</a></li>
   <li><a href="#simplifico-los-poligonos-para-agilizar-la-app" id="toc-simplifico-los-poligonos-para-agilizar-la-app" class="nav-link" data-scroll-target="#simplifico-los-poligonos-para-agilizar-la-app">Simplifico los poligonos para agilizar la app</a></li>
+  <li><a href="#incluyo-coordenadas-de-la-bounding-box" id="toc-incluyo-coordenadas-de-la-bounding-box" class="nav-link" data-scroll-target="#incluyo-coordenadas-de-la-bounding-box">Incluyo coordenadas de la bounding box</a></li>
   <li><a href="#calculo-de-centroides" id="toc-calculo-de-centroides" class="nav-link" data-scroll-target="#calculo-de-centroides">Calculo de centroides</a></li>
   </ul></li>
   </ul>
@@ -203,11 +204,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.2     ✔ readr     2.1.4
-✔ forcats   1.0.0     ✔ stringr   1.5.0
-✔ ggplot2   3.4.3     ✔ tibble    3.2.1
-✔ lubridate 1.9.2     ✔ tidyr     1.3.0
-✔ purrr     1.0.1     
+✔ dplyr     1.1.4     ✔ readr     2.1.4
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.4.4     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.0
+✔ purrr     1.0.2     
 ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ✖ dplyr::filter() masks stats::filter()
 ✖ dplyr::lag()    masks stats::lag()
@@ -216,40 +217,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'sf' was built under R version 4.2.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
 <pre><code>Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># El amba consta de 40 municipios mas ciudad de buenos aires</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># fuente: https://www.argentina.gob.ar/dami/centro/amba</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Vamos a hacer una seleccion de amba con menos partidos</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Lista de los partidos que vamos a considerar AMBA incluyendo comunas CABA</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>amba_reducido_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Almirante Brown'</span>,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Avellaneda'</span>,</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Berazategui'</span>,</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">paste</span>(<span class="st">'Comuna'</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>), <span class="co"># CABA</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Esteban Echeverría'</span>, <span class="st">'Escobar'</span>, <span class="st">'Ezeiza'</span>,</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Florencio Varela'</span>,</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'General San Martín'</span>,</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Hurlingham'</span>,</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Ituzaingó'</span>,</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'José C. Paz'</span>,</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'La Matanza'</span>,  <span class="st">'Lanús'</span>, <span class="st">'Lomas de Zamora'</span>,</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Malvinas Argentinas'</span>, <span class="st">'Merlo'</span>, <span class="st">'Moreno'</span>, <span class="st">'Morón'</span>,</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Quilmes'</span>, <span class="st">'Pilar'</span>, <span class="st">'Presidente Perón'</span>,</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'San Fernando'</span>, <span class="st">'San Isidro'</span>, <span class="st">'San Miguel'</span>,</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Tigre'</span>, <span class="st">'Tres de Febrero'</span>,</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Vicente López'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># El amba consta de 40 municipios mas ciudad de buenos aires</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># fuente: https://www.argentina.gob.ar/dami/centro/amba</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Vamos a hacer una seleccion de amba con menos partidos</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Lista de los partidos que vamos a considerar AMBA incluyendo comunas CABA</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>amba_reducido_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Almirante Brown'</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Avellaneda'</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Berazategui'</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">paste</span>(<span class="st">'Comuna'</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>), <span class="co"># CABA</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Esteban Echeverría'</span>, <span class="st">'Escobar'</span>, <span class="st">'Ezeiza'</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Florencio Varela'</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'General San Martín'</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Hurlingham'</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Ituzaingó'</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'José C. Paz'</span>,</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'La Matanza'</span>,  <span class="st">'Lanús'</span>, <span class="st">'Lomas de Zamora'</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Malvinas Argentinas'</span>, <span class="st">'Merlo'</span>, <span class="st">'Moreno'</span>, <span class="st">'Morón'</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Quilmes'</span>, <span class="st">'Pilar'</span>, <span class="st">'Presidente Perón'</span>,</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'San Fernando'</span>, <span class="st">'San Isidro'</span>, <span class="st">'San Miguel'</span>,</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Tigre'</span>, <span class="st">'Tres de Febrero'</span>,</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'Vicente López'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="area-metropolitana-de-buenos-aires-amba-y-ciudad-autonoma-de-buenos-aires-caba" class="level1">
 <h1>Area Metropolitana de Buenos Aires (AMBA) y Ciudad Autonoma de Buenos Aires (CABA)</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estos shapefiles fueron extraidos del Instituto Geografico Nacional (IGN)</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>amba <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/inicial/departamentos.shp"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_zm</span>() <span class="sc">|&gt;</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(NAM, <span class="fu">paste</span>(amba_reducido_names, <span class="at">collapse =</span> <span class="st">"|"</span>)),</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>         SAG <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'ARBA - Gerencia de Servicios Catastrales'</span>,</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'Direc. de Catastro'</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estos shapefiles fueron extraidos del Instituto Geografico Nacional (IGN)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>amba <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/inicial/departamentos.shp"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_zm</span>() <span class="sc">|&gt;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(NAM, <span class="fu">paste</span>(amba_reducido_names, <span class="at">collapse =</span> <span class="st">"|"</span>)),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>         SAG <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'ARBA - Gerencia de Servicios Catastrales'</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'Direc. de Catastro'</span>))</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `departamentos' from data source 
   `/Users/florenciadandrea/geocovid_bsas/data/inicial/departamentos.shp' 
@@ -261,14 +265,14 @@ Bounding box:  xmin: -74 ymin: -90 xmax: -25 ymax: -21.78113
 z_range:       zmin: 0 zmax: 0
 Geodetic CRS:  WGS 84</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Chequeo el resultado visualmente</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>amba_reducido <span class="ot">&lt;-</span> amba <span class="sc">|&gt;</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">'partido'</span> <span class="ot">=</span> NAM , geometry) <span class="sc">|&gt;</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(partido <span class="sc">%in%</span> amba_reducido_names)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> amba_reducido)<span class="sc">+</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Chequeo el resultado visualmente</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>amba_reducido <span class="ot">&lt;-</span> amba <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">'partido'</span> <span class="ot">=</span> NAM , geometry) <span class="sc">|&gt;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(partido <span class="sc">%in%</span> amba_reducido_names)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> amba_reducido)<span class="sc">+</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="creacion_mapa_bsas_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -276,50 +280,50 @@ Geodetic CRS:  WGS 84</code></pre>
 <section id="remuevo-poligonos-duplicados" class="level3">
 <h3 class="anchored" data-anchor-id="remuevo-poligonos-duplicados">Remuevo poligonos duplicados</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vemos que San Fernando esta compuesto por dos poligonos,</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Uno es el delta, y deberiamos eliminarlo</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> <span class="fu">subset</span>(amba_reducido,</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                        partido <span class="sc">==</span> <span class="st">'San Fernando'</span>))<span class="sc">+</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vemos que San Fernando esta compuesto por dos poligonos,</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Uno es el delta, y deberiamos eliminarlo</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> <span class="fu">subset</span>(amba_reducido,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                        partido <span class="sc">==</span> <span class="st">'San Fernando'</span>))<span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="creacion_mapa_bsas_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Lo paso a poligono para eliminar el extra</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>amba_reducido <span class="ot">=</span> <span class="fu">st_cast</span>(amba_reducido,<span class="st">"POLYGON"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Lo paso a poligono para eliminar el extra</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>amba_reducido <span class="ot">=</span> <span class="fu">st_cast</span>(amba_reducido,<span class="st">"POLYGON"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in st_cast.sf(amba_reducido, "POLYGON"): repeating attributes for all
 sub-geometries for which they may not be constant</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Chequeo que se cual quiero eliminar</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> amba_reducido<span class="sc">$</span>geom[<span class="dv">30</span>])<span class="sc">+</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Chequeo que se cual quiero eliminar</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> amba_reducido<span class="sc">$</span>geom[<span class="dv">30</span>])<span class="sc">+</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="creacion_mapa_bsas_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Elimino el poligono extra</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>amba_reducido <span class="ot">&lt;-</span> amba_reducido[<span class="sc">-</span><span class="dv">30</span>,]</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Archivo vectorial final de AMBA</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> amba_reducido)<span class="sc">+</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Elimino el poligono extra</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>amba_reducido <span class="ot">&lt;-</span> amba_reducido[<span class="sc">-</span><span class="dv">30</span>,]</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Archivo vectorial final de AMBA</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> amba_reducido)<span class="sc">+</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="creacion_mapa_bsas_files/figure-html/unnamed-chunk-2-3.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Este es el archivo con los poligonos finales seleccionados para AMBA</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="do">## guardo el archivo</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">st_write</span>(amba, <span class="st">"data/procesada/amba_ampliado.gpkg"</span>, <span class="at">append =</span> <span class="cn">FALSE</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="do">## guardo el archivo</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">st_write</span>(amba_reducido, <span class="st">"data/procesada/amba_reducido.gpkg"</span>, <span class="at">append =</span> <span class="cn">FALSE</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Deleting layer `amba_ampliado' using driver `GPKG'
-Writing layer `amba_ampliado' to data source 
-  `data/procesada/amba_ampliado.gpkg' using driver `GPKG'
-Writing 42 features with 10 fields and geometry type Multi Polygon.</code></pre>
+<pre><code>Deleting layer `amba_reducido' using driver `GPKG'
+Writing layer `amba_reducido' to data source 
+  `data/procesada/amba_reducido.gpkg' using driver `GPKG'
+Writing 42 features with 1 fields and geometry type Polygon.</code></pre>
 </div>
 </div>
 </section>
@@ -327,13 +331,13 @@ Writing 42 features with 10 fields and geometry type Multi Polygon.</code></pre>
 <section id="provincia-de-buenos-aires" class="level1">
 <h1>Provincia de Buenos Aires</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtengo los poligonos desde el IGN</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>bsas <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_read</span>(<span class="st">'data/inicial/departamentos.shp'</span>) <span class="sc">|&gt;</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(SAG <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'Direc. de Catastro'</span>, <span class="co"># comunas</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                           <span class="st">'ARBA - Gerencia de Servicios Catastrales'</span>), <span class="co"># partidos de baires</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                GNA <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'Partido'</span>, <span class="st">'Comuna'</span>)) <span class="sc">|&gt;</span> <span class="co"># elimino prov de san juan</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">'partido'</span> <span class="ot">=</span> NAM, geometry) <span class="sc">|&gt;</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  sf<span class="sc">::</span><span class="fu">st_zm</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtengo los poligonos desde el IGN</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>bsas <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_read</span>(<span class="st">'data/inicial/departamentos.shp'</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(SAG <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'Direc. de Catastro'</span>, <span class="co"># comunas</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                           <span class="st">'ARBA - Gerencia de Servicios Catastrales'</span>), <span class="co"># partidos de baires</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                GNA <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'Partido'</span>, <span class="st">'Comuna'</span>)) <span class="sc">|&gt;</span> <span class="co"># elimino prov de san juan</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">'partido'</span> <span class="ot">=</span> NAM, geometry) <span class="sc">|&gt;</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  sf<span class="sc">::</span><span class="fu">st_zm</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `departamentos' from data source 
   `/Users/florenciadandrea/geocovid_bsas/data/inicial/departamentos.shp' 
@@ -345,70 +349,74 @@ Bounding box:  xmin: -74 ymin: -90 xmax: -25 ymax: -21.78113
 z_range:       zmin: 0 zmax: 0
 Geodetic CRS:  WGS 84</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Lo paso a poligono para eliminar el extra en San Fernando</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>bsas <span class="ot">=</span> <span class="fu">st_cast</span>(bsas,<span class="st">"POLYGON"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Lo paso a poligono para eliminar el extra en San Fernando</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>bsas <span class="ot">=</span> <span class="fu">st_cast</span>(bsas,<span class="st">"POLYGON"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in st_cast.sf(bsas, "POLYGON"): repeating attributes for all
 sub-geometries for which they may not be constant</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Chequeo el numero de poligono que quiero eliminar</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bsas<span class="sc">$</span>geometry[<span class="dv">126</span>])<span class="sc">+</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Chequeo el numero de poligono que quiero eliminar</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bsas<span class="sc">$</span>geometry[<span class="dv">126</span>])<span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="creacion_mapa_bsas_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Elimino el poligono extra</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>bsas <span class="ot">&lt;-</span> bsas[<span class="sc">-</span><span class="dv">126</span>,]</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Mapa final</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bsas)<span class="sc">+</span></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Elimino el poligono extra</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>bsas <span class="ot">&lt;-</span> bsas[<span class="sc">-</span><span class="dv">126</span>,]</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Mapa final</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bsas)<span class="sc">+</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="creacion_mapa_bsas_files/figure-html/unnamed-chunk-4-2.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_sf</span>(bsas, <span class="st">'data/procesada/bsas.gpkg'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Llamo al archivo bsas_comunas ya que presenta las comunas de CABA</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_sf</span>(bsas, <span class="st">'data/procesada/bsas_comunas.gpkg'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="unifico-las-comunas" class="level3">
 <h3 class="anchored" data-anchor-id="unifico-las-comunas">Unifico las comunas</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>  <span class="co"># uno las comunas</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  caba <span class="ot">&lt;-</span>  bsas[<span class="fu">grep</span>(<span class="st">"Comuna"</span>, bsas<span class="sc">$</span>partido), ] <span class="sc">|&gt;</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">st_union</span>()</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># aca podria agregar algun tipo de control de calidad para asegurarme que</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># tengo la cantidad de comunas que son</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># chequear que tenga proyeccion</span></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># las reemplazo en el dataset por caba</span></span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a> bsas_caba <span class="ot">&lt;-</span>  bsas <span class="sc">|&gt;</span></span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">slice</span>(<span class="sc">-</span><span class="fu">grep</span>(<span class="st">"Comuna"</span>, bsas<span class="sc">$</span>partido)) <span class="sc">|&gt;</span></span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rbind</span>(<span class="fu">st_sf</span>(</span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>                <span class="at">geometry =</span> caba,</span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">partido =</span> <span class="st">'Capital Federal'</span></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    ))</span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_sf</span>(<span class="at">data =</span> <span class="fu">subset</span>(bsas_caba,</span>
-<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>                              partido <span class="sc">==</span> <span class="st">'Capital Federal'</span>)) <span class="sc">+</span> </span>
-<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>  <span class="co"># uno las comunas</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  caba <span class="ot">&lt;-</span>  bsas[<span class="fu">grep</span>(<span class="st">"Comuna"</span>, bsas<span class="sc">$</span>partido), ] <span class="sc">|&gt;</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">st_union</span>()</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># aca podria agregar algun tipo de control de calidad para asegurarme que</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># tengo la cantidad de comunas que son</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># chequear que tenga proyeccion</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># las reemplazo en el dataset por caba</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a> bsas_caba <span class="ot">&lt;-</span>  bsas <span class="sc">|&gt;</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">slice</span>(<span class="sc">-</span><span class="fu">grep</span>(<span class="st">"Comuna"</span>, bsas<span class="sc">$</span>partido)) <span class="sc">|&gt;</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rbind</span>(<span class="fu">st_sf</span>(</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>                <span class="at">geometry =</span> caba,</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">partido =</span> <span class="st">'Capital Federal'</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_sf</span>(<span class="at">data =</span> <span class="fu">subset</span>(bsas_caba,</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>                              partido <span class="sc">==</span> <span class="st">'Capital Federal'</span>)) <span class="sc">+</span> </span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="creacion_mapa_bsas_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_sf</span>(bsas_caba, <span class="st">'data/procesada/bsas_caba.gpkg'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Llamo a este archivo bsas ya que no presenta la division interna de CABA</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># en comunas</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">write_sf</span>(bsas_caba, <span class="st">'data/procesada/bsas.gpkg'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="simplifico-los-poligonos-para-agilizar-la-app" class="level3">
 <h3 class="anchored" data-anchor-id="simplifico-los-poligonos-para-agilizar-la-app">Simplifico los poligonos para agilizar la app</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>bsas_caba <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">'data/procesada/bsas_caba.gpkg'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>bsas_caba <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">'data/procesada/bsas.gpkg'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Reading layer `bsas_caba' from data source 
-  `/Users/florenciadandrea/geocovid_bsas/data/procesada/bsas_caba.gpkg' 
+<pre><code>Reading layer `bsas' from data source 
+  `/Users/florenciadandrea/geocovid_bsas/data/procesada/bsas.gpkg' 
   using driver `GPKG'
 Simple feature collection with 136 features and 1 field
 Geometry type: POLYGON
@@ -416,27 +424,45 @@ Dimension:     XY
 Bounding box:  xmin: -63.38597 ymin: -41.03791 xmax: -56.66499 ymax: -33.26185
 Geodetic CRS:  WGS 84</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Es posible emplear la funcion st_simplify para esto mismo, pero no conserva</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="co"># tan bien la topografia entre los poligonos, es por ello que uso este paquete</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co"># donde se aplica el algoritmo de Visvalingam</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rmapshaper)</span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>bsas_caba_simple <span class="ot">&lt;-</span> rmapshaper<span class="sc">::</span><span class="fu">ms_simplify</span>(bsas_caba)</span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="fu">st_write</span>(bsas_caba_simple, <span class="st">"data/procesada/bsas_caba_simple.gpkg"</span>, <span class="at">append=</span><span class="cn">FALSE</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Es posible emplear la funcion st_simplify para esto mismo, pero no conserva</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co"># tan bien la topografia entre los poligonos, es por ello que uso este paquete</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co"># donde se aplica el algoritmo de Visvalingam</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rmapshaper)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>bsas_caba_simple <span class="ot">&lt;-</span> rmapshaper<span class="sc">::</span><span class="fu">ms_simplify</span>(bsas_caba)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="incluyo-coordenadas-de-la-bounding-box" class="level3">
+<h3 class="anchored" data-anchor-id="incluyo-coordenadas-de-la-bounding-box">Incluyo coordenadas de la bounding box</h3>
+<p>Realizo este paso para que sea más sencillo hacer el zoom en el mapa.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Agrego coordenadas al mapa de BsAs que voy a necesitar</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co"># para hacer zoom en la app</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="fu">seq_along</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(bsas_caba_simple))){</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  bsas_caba_simple[i, <span class="st">"lat1"</span>] <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_bbox</span>(bsas_caba_simple[i,])<span class="sc">$</span>ymin</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  bsas_caba_simple[i,<span class="st">"lat2"</span>] <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_bbox</span>(bsas_caba_simple[i,])<span class="sc">$</span>ymax</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  bsas_caba_simple[i, <span class="st">"lng1"</span>] <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_bbox</span>(bsas_caba_simple[i,])<span class="sc">$</span>xmin</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  bsas_caba_simple[i, <span class="st">"lng2"</span>] <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_bbox</span>(bsas_caba_simple[i,])<span class="sc">$</span>xmax</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a><span class="fu">st_write</span>(bsas_caba_simple, <span class="st">"data/procesada/bsas_final.gpkg"</span>, <span class="at">append=</span><span class="cn">FALSE</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Deleting layer `bsas_caba_simple' using driver `GPKG'
-Writing layer `bsas_caba_simple' to data source 
-  `data/procesada/bsas_caba_simple.gpkg' using driver `GPKG'
-Writing 136 features with 1 fields and geometry type Polygon.</code></pre>
+<pre><code>Deleting layer `bsas_final' using driver `GPKG'
+Writing layer `bsas_final' to data source 
+  `data/procesada/bsas_final.gpkg' using driver `GPKG'
+Writing 136 features with 5 fields and geometry type Polygon.</code></pre>
 </div>
 </div>
 </section>
 <section id="calculo-de-centroides" class="level3">
 <h3 class="anchored" data-anchor-id="calculo-de-centroides">Calculo de centroides</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>cent <span class="ot">&lt;-</span> bsas_caba_simple <span class="sc">|&gt;</span> </span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_point_on_surface</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>cent <span class="ot">&lt;-</span> bsas_caba_simple <span class="sc">|&gt;</span> </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_point_on_surface</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: st_point_on_surface assumes attributes are constant over geometries</code></pre>
 </div>
@@ -444,23 +470,175 @@ Writing 136 features with 1 fields and geometry type Polygon.</code></pre>
 <pre><code>Warning in st_point_on_surface.sfc(st_geometry(x)): st_point_on_surface may not
 give correct results for longitude/latitude data</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># guardo el archivo con los vectores de partidos de provincia de Buenos Aires</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bsas_caba)<span class="sc">+</span></span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> cent) <span class="sc">+</span></span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># guardo el archivo con los vectores de partidos de provincia de Buenos Aires</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bsas_caba)<span class="sc">+</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> cent) <span class="sc">+</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="creacion_mapa_bsas_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+<p><img src="creacion_mapa_bsas_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># guardo los centroides</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_write</span>(cent, <span class="st">"data/procesada/centroides_mapa.gpkg"</span>, <span class="at">append=</span><span class="cn">FALSE</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cambio nombres de partidos para evitar problemas al momento de hacer joins</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>cent[<span class="dv">78</span>,<span class="st">'partido'</span>] <span class="ot">&lt;-</span> <span class="st">'Lomas De Zamora'</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>cent[<span class="dv">132</span>,<span class="st">'partido'</span>] <span class="ot">&lt;-</span> <span class="st">'Tres De Febrero'</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>cent <span class="ot">&lt;-</span> cent <span class="sc">|&gt;</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>         <span class="co"># salgo del formato sf: calculo lat y long como variables separadas</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>          <span class="fu">cbind</span>(sf<span class="sc">::</span><span class="fu">st_coordinates</span>(cent)) <span class="sc">|&gt;</span></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>          dplyr<span class="sc">::</span><span class="fu">arrange</span>(partido) <span class="sc">|&gt;</span> </span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>          <span class="fu">select</span>(<span class="sc">-</span>lat1, <span class="sc">-</span>lat2, <span class="sc">-</span>lng1, <span class="sc">-</span>lng2)</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a><span class="co"># elimino el formato sf</span></span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">st_geometry</span>(cent) <span class="ot">&lt;-</span>  <span class="cn">NULL</span></span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>cent</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Deleting layer `centroides_mapa' using driver `GPKG'
-Writing layer `centroides_mapa' to data source 
-  `data/procesada/centroides_mapa.gpkg' using driver `GPKG'
-Writing 136 features with 1 fields and geometry type Point.</code></pre>
+<pre><code>                               partido         X         Y
+1                           25 de Mayo -60.28153 -35.55392
+2                           9 de Julio -60.92597 -35.53430
+3                        Adolfo Alsina -62.95972 -37.16983
+4               Adolfo Gonzales Chaves -60.28791 -37.94044
+5                              Alberti -60.28311 -35.02820
+6                      Almirante Brown -58.37581 -34.83383
+7                            Arrecifes -60.01660 -34.00289
+8                           Avellaneda -58.33643 -34.67923
+9                             Ayacucho -58.59323 -36.97672
+10                                Azul -59.68005 -36.83704
+11                        Bahía Blanca -62.18668 -38.59020
+12                            Balcarce -58.18939 -37.75310
+13                            Baradero -59.44140 -33.90786
+14                       Benito Juárez -59.88628 -37.58798
+15                         Berazategui -58.14120 -34.84363
+16                             Berisso -57.85202 -34.89866
+17                             Bolívar -61.15579 -36.29357
+18                             Bragado -60.60463 -35.02820
+19                            Brandsen -58.23788 -35.19553
+20                             Campana -58.88924 -34.15991
+21                     Capital Federal -58.43547 -34.61515
+22                   Capitán Sarmiento -59.84528 -34.14161
+23                      Carlos Casares -61.29527 -35.73349
+24                      Carlos Tejedor -62.43390 -35.39224
+25                     Carmen de Areco -59.92388 -34.42105
+26                            Castelli -57.65124 -36.01938
+27                            Cañuelas -58.72227 -35.15660
+28                           Chacabuco -60.32958 -34.63540
+29                           Chascomús -57.87466 -35.59756
+30                           Chivilcoy -59.97838 -34.90887
+31                               Colón -61.04032 -33.85050
+32                     Coronel Dorrego -61.15382 -38.64395
+33                    Coronel Pringles -61.24195 -38.16803
+34                      Coronel Suárez -61.91250 -37.54200
+35  Coronel de Marina Leonardo Rosales -61.93088 -38.81603
+36                            Daireaux -61.94126 -36.61709
+37                             Dolores -57.59941 -36.42196
+38                            Ensenada -57.97776 -34.84021
+39                             Escobar -58.77772 -34.34234
+40                  Esteban Echeverría -58.47645 -34.82407
+41               Exaltación de la Cruz -59.13155 -34.31044
+42                              Ezeiza -58.57336 -34.87375
+43                    Florencio Varela -58.25360 -34.88657
+44                 Florentino Ameghino -62.41611 -34.88750
+45                    General Alvarado -58.06044 -38.20038
+46                      General Alvear -60.10413 -36.04127
+47                    General Arenales -61.29278 -34.23922
+48                    General Belgrano -58.61672 -35.84266
+49                       General Guido -57.94733 -36.67494
+50              General Juan Madariaga -57.28162 -37.16193
+51                   General La Madrid -61.28003 -37.40732
+52                   General Las Heras -58.99601 -34.90984
+53                     General Lavalle -57.01046 -36.67784
+54                         General Paz -58.33569 -35.47546
+55                       General Pinto -61.97697 -34.68665
+56                  General Pueyrredón -57.78250 -37.97401
+57                   General Rodríguez -58.99482 -34.64047
+58                    General Viamonte -61.06068 -34.98104
+59                    General Villegas -62.99874 -34.87244
+60                             Guaminí -62.43702 -36.90480
+61                   Hipólito Yrigoyen -61.69276 -36.27273
+62                          Hurlingham -58.65275 -34.59981
+63                           Ituzaingó -58.68822 -34.64233
+64                         José C. Paz -58.78106 -34.50335
+65                               Junín -60.96998 -34.54486
+66                            La Costa -56.69242 -36.66074
+67                          La Matanza -58.63546 -34.77297
+68                            La Plata -57.99139 -35.03789
+69                               Lanús -58.39866 -34.70293
+70                             Laprida -60.64166 -37.49570
+71                          Las Flores -59.12327 -36.01897
+72                     Leandro N. Alem -61.64284 -34.49384
+73                              Lezama -57.93164 -35.86462
+74                             Lincoln -61.80579 -35.09365
+75                             Lobería -58.68880 -38.07036
+76                               Lobos -59.15286 -35.20128
+77                     Lomas De Zamora -58.57596 -34.54360
+78                     Lomas de Zamora -58.41026 -34.74998
+79                               Luján -59.15158 -34.58838
+80                           Magdalena -57.62397 -35.18716
+81                               Maipú -57.58922 -36.89209
+82                 Malvinas Argentinas -58.72082 -34.48464
+83                        Mar Chiquita -57.60642 -37.51881
+84                          Marcos Paz -58.83455 -34.82132
+85                            Mercedes -59.42672 -34.70347
+86                               Merlo -58.74705 -34.70788
+87                               Monte -58.75188 -35.49808
+88                       Monte Hermoso -61.28918 -38.95552
+89                              Moreno -58.80228 -34.59624
+90                               Morón -58.61937 -34.64628
+91                             Navarro -59.39377 -35.02273
+92                            Necochea -59.11314 -38.17667
+93                           Olavarría -60.71476 -36.85806
+94                           Patagones -62.86131 -40.18127
+95                             Pehuajó -61.97322 -35.90659
+96                          Pellegrini -63.16732 -36.24039
+97                                Pila -58.38114 -36.23235
+98                               Pilar -58.89737 -34.44171
+99                             Pinamar -56.86715 -37.10634
+100                   Presidente Perón -58.41364 -34.94209
+101                        Punta Indio -57.34538 -35.45684
+102                               Puán -63.03783 -38.11116
+103                            Quilmes -58.27554 -34.74127
+104                            Ramallo -60.03576 -33.58824
+105                              Rauch -58.91645 -36.60297
+106                          Rivadavia -63.02164 -35.57785
+107                              Rojas -60.72242 -34.19580
+108                        Roque Pérez -59.21778 -35.52084
+109                           Saavedra -62.43006 -37.74616
+110                          Saladillo -59.64920 -35.68244
+111                         Salliqueló -63.04286 -36.67565
+112                              Salto -60.30479 -34.24776
+113                San Andrés de Giles -59.47306 -34.42320
+114               San Antonio de Areco -59.56440 -34.20744
+115                       San Cayetano -59.63009 -38.40343
+116                       San Fernando -58.56731 -34.45870
+117                         San Isidro -58.53767 -34.48685
+118                         San Miguel -58.70184 -34.55303
+119                        San Nicolás -60.28747 -33.47246
+120                          San Pedro -59.82146 -33.79661
+121                        San Vicente -58.42015 -35.08145
+122                           Suipacha -59.71374 -34.73507
+123                             Tandil -59.18070 -37.33613
+124                           Tapalqué -60.22351 -36.36921
+125                              Tigre -58.61231 -34.40115
+126                           Tordillo -57.22011 -36.41438
+127                          Tornquist -62.18618 -38.26284
+128                    Trenque Lauquen -62.69757 -36.04662
+129                       Tres Arroyos -60.26733 -38.47286
+130                    Tres De Febrero -60.58050 -33.86411
+131                         Tres Lomas -62.88158 -36.48679
+132                    Tres de Febrero -58.56250 -34.60183
+133                      Vicente López -58.50640 -34.52899
+134                       Villa Gesell -57.06391 -37.36494
+135                          Villarino -62.86191 -39.15349
+136                             Zárate -59.14666 -34.00438</code></pre>
 </div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># guardo los centroides</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(cent, <span class="st">"data/procesada/centroides_mapa.csv"</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

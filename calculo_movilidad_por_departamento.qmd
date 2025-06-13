@@ -31,45 +31,23 @@ library(terra)
 ## 1. Guardo información de los rasters en un dataset 
 
 Genero una base de datos con los polígonos de los departamentos de provincia
-de Buenos Aires y la ubicación de los archivos en el sistema.
+de Buenos Aires (no los rasters solo de AMBA) y la ubicación de 
+los archivos en el sistema.
 
 ```{r}
 
-# Leo todos los archivos de la carpeta con rasters de ejemplo
- all_files <- list.files("data/inicial/")
-
-# Datos reales
-# all_files <- list.files("../geocovid/data/rasters/")
-
-# Filtro los archivos que terminan con '.tif'
-base_raster <- all_files[grep(".tif$",
-                              basename(all_files))]  |>
-  tibble::as_tibble() |>
-  tidyr::separate(value,
-                  into = c('locacion',
-                           'tipo_de_raster',
-                           'fecha',
-                           'hora'),
-                  sep = '_',
-                  remove = FALSE) |>
-  dplyr::mutate(fecha = as.Date(fecha),
-                hora = as.numeric(str_sub(hora, end= -4))) |>
-  dplyr::mutate(momento = dplyr::case_when(hora == 0 ~ "noche",
-                                           hora == 8 ~ "mañana",
-                                           hora == 16 ~ "tarde"))
-
-# formato de fecha
-formatted_date <- format("2020-05-10", format = "%Y-%m-%d")
-
-bsas <-  sf::st_read("data/procesada/bsas_caba_simple.gpkg")
-
-base_raster_baires <- base_raster |>
-  dplyr::filter(locacion == 'baires') |> #elimina valores de amba que coinciden
-  dplyr::cross_join(bsas) |>
-  dplyr::mutate(file = paste0('data/inicial/', value)) |>
- # datos reales
- # dplyr::mutate(file = paste0('../geocovid/data/rasters/', value)) |>
+base_raster_baires <- geocovidapp::base_raster |>
+  dplyr::filter(locacion == 'baires') |>
+  dplyr::cross_join(geocovidapp::bsas) |>
+  dplyr::mutate(
+    file = dplyr::case_when(
+      tipo_de_raster == 'pc' ~ paste0('rasters_baires/baires_pc/', filename),
+      tipo_de_raster == '7dpc' ~ paste0('rasters_baires/baires_7dpc/', filename),
+      TRUE ~ NA)  
+  ) |>
   sf::st_as_sf()
+
+
 
 ```
 
@@ -85,30 +63,29 @@ mañana (8 am) y tarde (4 pm).
 px_baires <- c()
 
 for(i in 1:nrow(base_raster_baires)){
-
-
-  # cada fila corresponde a un partido diferente
-  poli <- sf::st_as_sf(base_raster_baires[i, c('partido','geom')]) |>
-    st_transform(3857)
+  
+  # Cada fila corresponde a un partido diferente
+  poli <- sf::st_as_sf(base_raster_baires[i, c('partido','geometry')]) 
   
   # si bien el raster va a ser el mismo en muchos casos
   raster <- terra::rast(base_raster_baires$file[i])
-  crs(raster) <-  "epsg:3857"
-
-
-  int_data2 <- terra::extract( raster,
+  
+ # Extraigo el valor promedio de pixeles para ese partido y raster
+  int_data <- terra::extract( raster,
                                sf::st_as_sf(poli),
                                fun = mean,
                                na.rm = TRUE)
 
-
+  # Guardo en un dataframe
   px_data <- data.frame(base_raster_baires[i,],
-                        'px_mean' = int_data2[[2]] 
-                        )
-
+                        'px_mean' = int_data[[2]] 
+  )
+  
+  # El loop me permite guardar la informacion de cada partido para todo BsAs
   px_baires <- rbind(px_data, px_baires)
 }
 
+# para los valores promedio del dia, vuelvo a crear un promedio
 px_baires_w <- px_baires |>
   select(fecha, locacion, tipo_de_raster, 
          momento, hora, partido, px_mean, geom) |>
