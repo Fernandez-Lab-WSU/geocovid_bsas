@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Creación de imagenes raster – GeoCovid Buenos Aires</title>
+<title>Base de datos – GeoCovid Buenos Aires</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -171,12 +171,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#paquete-quadkeyr" id="toc-paquete-quadkeyr" class="nav-link active" data-scroll-target="#paquete-quadkeyr">Paquete <code>quadkeyr</code></a></li>
-  <li><a href="#leo-los-archivos" id="toc-leo-los-archivos" class="nav-link" data-scroll-target="#leo-los-archivos">1. Leo los archivos</a></li>
-  <li><a href="#convierto-los-quadkeys-en-coordenadas-del-mapa" id="toc-convierto-los-quadkeys-en-coordenadas-del-mapa" class="nav-link" data-scroll-target="#convierto-los-quadkeys-en-coordenadas-del-mapa">2. Convierto los QuadKeys en coordenadas del mapa</a></li>
-  <li><a href="#completar-la-grilla-de-quadkeys" id="toc-completar-la-grilla-de-quadkeys" class="nav-link" data-scroll-target="#completar-la-grilla-de-quadkeys">3. Completar la grilla de QuadKeys</a></li>
-  <li><a href="#crear-los-polígonos" id="toc-crear-los-polígonos" class="nav-link" data-scroll-target="#crear-los-polígonos">4. Crear los polígonos</a></li>
-  <li><a href="#generar-los-rasters-para-las-variables-de-interés" id="toc-generar-los-rasters-para-las-variables-de-interés" class="nav-link" data-scroll-target="#generar-los-rasters-para-las-variables-de-interés">5. Generar los rasters para las variables de interés</a></li>
+  <li><a href="#subida-de-los-archivos-a-postgresql" id="toc-subida-de-los-archivos-a-postgresql" class="nav-link active" data-scroll-target="#subida-de-los-archivos-a-postgresql">Subida de los archivos a PostgreSQL</a></li>
   </ul>
 </nav>
     </div>
@@ -185,7 +180,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Creación de imagenes raster</h1>
+<h1 class="title">Base de datos</h1>
 </div>
 
 
@@ -202,131 +197,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<hr>
-<p><strong>Input inicial</strong> - Archivos <code>.csv</code> con datos de movilidad ciudadana expresados por QuadKeys. Existe un archivo por locación y horario reportado.</p>
-<p><strong>Objetivo</strong> - Crear las imagenes rasters para cada caso expresando como atributo el cambio porcentual semanal y prepandemia.</p>
-<hr>
-<section id="paquete-quadkeyr" class="level2">
-<h2 class="anchored" data-anchor-id="paquete-quadkeyr">Paquete <code>quadkeyr</code></h2>
-<p>Los pasos que se describen aquí se encuentran detallados en <a href="https://fernandez-lab-wsu.github.io/quadkeyr/articles/create_rasters_from_grid.html">la viñeta del paquete <code>quadkeyr</code></a> que fue especificamente creado para la creación de los rasters.</p>
-</section>
-<section id="leo-los-archivos" class="level2">
-<h2 class="anchored" data-anchor-id="leo-los-archivos">1. Leo los archivos</h2>
-<p>Esta función me reporta los archivos faltantes en la serie de días y horarios.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>files <span class="ot">&lt;-</span> <span class="fu">read_all_files</span>(<span class="at">path_to_csvs =</span> <span class="st">"../geocovid/data/rasters/"</span>,</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">colnames =</span> <span class="fu">c</span>(<span class="st">"lat"</span>, <span class="st">"lon"</span>, </span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                                     <span class="st">"quadkey"</span>, <span class="st">"date_time"</span>, </span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                                     <span class="st">"n_crisis"</span>, <span class="st">"percent_change"</span>),</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">coltypes =</span> <span class="fu">list</span>(</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">lat =</span> <span class="st">'d'</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                         <span class="at">lon =</span> <span class="st">'d'</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                         <span class="at">quadkey =</span> <span class="st">'i'</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                         <span class="at">date_time =</span> <span class="st">'T'</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                         <span class="at">n_crisis =</span> <span class="st">'c'</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                         <span class="at">percent_change =</span> <span class="st">'c'</span>)) </span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>files</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Por ejemplo, estos fueron los faltantes para los datos de AMBA:</p>
-<pre><code>day time
-1  2020-07-03    0
-2  2020-07-04    0
-3  2020-07-05    0
-4  2020-07-06    0
-5  2020-07-07    0
-6  2020-07-08    0
-7  2020-07-09    0
-8  2020-07-10    0
-9  2020-07-11    0
-10 2020-07-12    0
-11 2020-09-12    0
-12 2020-09-13    0
-13 2020-07-03    8
-14 2020-07-04    8
-15 2020-07-05    8
-16 2020-07-06    8
-17 2020-07-07    8
-18 2020-07-08    8
-19 2020-07-09    8
-20 2020-07-10    8
-21 2020-07-11    8
-22 2020-07-12    8
-23 2020-09-12    8
-24 2020-09-13    8
-25 2020-07-03   16
-26 2020-07-04   16
-27 2020-07-05   16
-28 2020-07-06   16
-29 2020-07-07   16
-30 2020-07-08   16
-31 2020-07-09   16
-32 2020-07-10   16
-33 2020-07-11   16
-34 2020-09-12   16</code></pre>
-</section>
-<section id="convierto-los-quadkeys-en-coordenadas-del-mapa" class="level2">
-<h2 class="anchored" data-anchor-id="convierto-los-quadkeys-en-coordenadas-del-mapa">2. Convierto los QuadKeys en coordenadas del mapa</h2>
-<ul>
-<li><p>Tomo todos los QuadKeys que fueron reportados al menos una vez en mi lista de archivos <code>.csv</code> y los convierto en latitud y longitud.</p></li>
-<li><p>Este punto representa la ubicación del vértice de arriba a la izquierda de cada QuadKey.</p></li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>quadkeys <span class="ot">&lt;-</span>  <span class="fu">unique</span>(files<span class="sc">$</span>quadkey)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>qtll <span class="ot">&lt;-</span> <span class="fu">quadkey_to_latlong</span>(<span class="at">quadkeys =</span> quadkeys)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="completar-la-grilla-de-quadkeys" class="level2">
-<h2 class="anchored" data-anchor-id="completar-la-grilla-de-quadkeys">3. Completar la grilla de QuadKeys</h2>
-<ul>
-<li><p>Si bien un gran número de QuadKeys que son siempre reportados en todos los archivos, esto no es una constante.</p></li>
-<li><p>La función <code>regular_qk_grid</code> permite completar la grilla. Esta función devuelve una lista con 3 elementos: <code>data</code>, <code>num_rows</code> y <code>num_cols</code>.</p></li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>regular_grid <span class="ot">&lt;-</span> <span class="fu">regular_qk_grid</span>(qtll)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>regular_grid</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="crear-los-polígonos" class="level2">
-<h2 class="anchored" data-anchor-id="crear-los-polígonos">4. Crear los polígonos</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>polygrid <span class="ot">&lt;-</span> <span class="fu">grid_to_polygon</span>(regular_grid<span class="sc">$</span>data)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="generar-los-rasters-para-las-variables-de-interés" class="level2">
-<h2 class="anchored" data-anchor-id="generar-los-rasters-para-las-variables-de-interés">5. Generar los rasters para las variables de interés</h2>
-<p>La función <code>apply_weekly_lag()</code> permite generar los datos de cambio porcentual semanal creando un lag de 7 días.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>polyvar <span class="ot">&lt;-</span> files <span class="sc">|&gt;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>            dplyr<span class="sc">::</span><span class="fu">inner_join</span>(polygrid, <span class="at">by =</span> <span class="st">'quadkey'</span> ) <span class="sc">|&gt;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">apply_weekly_lag</span>() </span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>polyvar7 <span class="ot">&lt;-</span>  polyvar <span class="sc">|&gt;</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>               <span class="fu">drop_na</span>(percent_change_7)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Loas imagenes raster se crearan automaticamente para todos los archivos en la carpeta con el formato <code>&lt;nombre&gt;_&lt;fecha&gt;_&lt;hora&gt;.tif</code>. La función <code>polygon_to_raster</code> va a crear los raster incluso si hay algún archivo de la serie faltante.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># cambio porcentual prepandemia</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">polygon_to_raster</span>(<span class="at">data =</span> polyvar,</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">nx =</span> grid<span class="sc">$</span>num_cols <span class="sc">+</span><span class="dv">1</span> ,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ny =</span> grid<span class="sc">$</span>num_rows <span class="sc">+</span><span class="dv">1</span> ,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">template =</span> polyvar,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">variable =</span> <span class="st">'percent_change'</span>,</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">filename =</span> <span class="st">'Baires'</span>,</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">path =</span> <span class="st">"data/"</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>                  )</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co"># cambio porcentual semanal</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="fu">polygon_to_raster</span>(<span class="at">data =</span> polyvar7,</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">nx =</span> grid<span class="sc">$</span>num_cols <span class="sc">+</span><span class="dv">1</span> ,</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ny =</span> grid<span class="sc">$</span>num_rows <span class="sc">+</span><span class="dv">1</span> ,</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                  <span class="at">template =</span> polyvar7,</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">variable =</span> <span class="st">'percent_change_7'</span>,</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>                  <span class="at">filename =</span> <span class="st">'Baires'</span>,</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>                  <span class="at">path =</span> <span class="st">"data/"</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>                  )</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<p>La base de datos debe tener una columna para alojar los rasters y otra que permita guardar el nombre del archivo para reconocerlo.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> raster_schema.rasters_geo (</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    filename TEXT, </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    rast raster</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>); </span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="subida-de-los-archivos-a-postgresql" class="level2">
+<h2 class="anchored" data-anchor-id="subida-de-los-archivos-a-postgresql">Subida de los archivos a PostgreSQL</h2>
+<p>Extraido de https://sysadminguides.org/2017/05/02/how-to-pass-credentials-in-powershell/</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a> <span class="co"># Configurar la variable PGPASSWORD en la terminal antes de correr</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="ex">:PGPASSWORD</span> = <span class="st">"####"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Append postrgres to path</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="ex">:PATH</span> += <span class="st">";C:\Program Files\PostgreSQL\16\bin"</span> </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="ex">:PATH</span> += <span class="st">";C:\Program Files\PostgreSQL\16\lib"</span> </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="ex">:PATH</span> += <span class="st">";C:\Program Files\PostgreSQL\16\share\contrib\postgis-3.4\proj\proj.db"</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Database connection parameters</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="va">$DBNAME</span><span class="ex">=</span><span class="st">"geocovidapp_db"</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="va">$USER</span><span class="ex">=</span><span class="st">"####"</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="va">$PORT</span><span class="ex">=</span><span class="st">"####"</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="va">$PGPASSWORD</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a> <span class="co"># Define variables</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="va">$RASTER_DIRECTORY</span> = <span class="st">"C:\Users\florencia\Documents\rasters\rasters_amba\amba_7dpc</span><span class="dt">\"</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="va">$RASTER_FILES</span><span class="st"> = Get-ChildItem -Path </span><span class="va">$RASTER_DIRECTORY</span><span class="st"> -Filter "</span><span class="pp">*</span>.tif<span class="st">"</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="va">$RASTER_FULLPATH</span><span class="st"> = Get-ChildItem -Path </span><span class="va">$RASTER_DIRECTORY</span><span class="st"> -Filter "</span><span class="pp">*</span>.tif<span class="st">" | ForEach-Object {Join-Path -Path </span><span class="va">$RASTER_DIRECTORY</span><span class="st"> -ChildPath </span><span class="va">$_</span><span class="st">.Name}</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="st"># Loop through raster files</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="st">foreach (</span><span class="va">$RASTER_FILE</span><span class="st"> in </span><span class="va">$RASTER_FULLPATH</span><span class="st">) {</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="st">    # Get raster file name without path and extension</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="st">    </span><span class="va">$RASTER_NAME</span><span class="st"> = [System.IO.Path]::GetFileNameWithoutExtension(</span><span class="va">$RASTER_FILE</span><span class="st">)</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="st">    # Insert raster data into PostGIS table</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="st">    raster2pgsql -a -s 4326 -I -F </span><span class="va">$RASTER_FILE</span><span class="st"> raster_schema.rasters_geo | psql -d </span><span class="va">$DBNAME</span><span class="st"> -U </span><span class="va">$USER</span><span class="st"> -p </span><span class="va">$PORT</span><span class="st"> </span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="st">    # Optional: Add metadata to the inserted record</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="st">    # psql -d </span><span class="va">$DBNAME</span><span class="st"> -U </span><span class="va">$USER</span><span class="st"> -p </span><span class="va">$PORT</span><span class="st"> -c "</span>UPDATE SET filename = <span class="st">'Raster $RASTER_NAME'</span>, description = <span class="st">'Description for $RASTER_NAME'</span> WHERE rast ~<span class="pp">*</span> <span class="st">'$RASTER_NAME'</span><span class="kw">;</span><span class="st">"</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="st">} </span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Click izquierdo en el archivo y selecciono <code>run with PowerShell</code> Este archivo permite subir los raster a la base de datos.</p>
+<pre class="poweshell"><code>powershell.exe -File .\filename.ps1</code></pre>
+<p>Para crear las tablas use este schema:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> raster_schema.raster_geo_amba (</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">id</span> SERIAL <span class="kw">PRIMARY</span> <span class="kw">KEY</span>, <span class="co">-- Unique identifier for each record</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    filename TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>, <span class="co">-- Column to store the filename (adjust as needed)</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    rast raster,            <span class="co">-- Column to store the raster data (PostGIS raster type)</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    created_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span> <span class="co">-- Optional: to store creation timestamp</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>);</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
 </section>
