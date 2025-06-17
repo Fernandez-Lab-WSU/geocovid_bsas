@@ -174,9 +174,33 @@ Las variables `px_mean_dianoche` y `noche_0` se convierten en categóricas.
 #write_sf(px_bsas, "data/procesada/px_baires_demo_app.gpkg")
 
 ```
+Para subir los datos a PostgreSQL uso el siguiente código.
+
+```{r}
+pool <- dbConnect(
+  RPostgres::Postgres(),
+  dbname = db$dbname,
+  user = db$user,
+  password = db$password,
+  port = db$port,
+  host = db$host
+)
+# In SQL terminal -> "CREATE SCHEMA IF NOT EXISTS px_promedio;"
+st_write(
+  obj = px_bsas,
+  dsn = pool,
+  layer = DBI::Id(schema = "px_promedio", table = "px_promedio"),
+  layer_options = "OVERWRITE=YES"
+)
+
+# Disconnect
+dbDisconnect(pool)
+
+```
 
 ## 3. Mapa de provincia de Buenos Aires
 
+Ahora visualizo los datos.
 
 ```{r warning=FALSE}
 
