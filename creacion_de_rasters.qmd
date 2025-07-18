@@ -30,7 +30,7 @@ Esta función me reporta los archivos faltantes en la serie de días y horarios.
 ```{r eval= FALSE, include = TRUE}
   library(quadkeyr)
   
-  files <- read_fb_mobility_files(
+  files <- quadkeyr::read_fb_mobility_files(
     path_to_csvs = "../Desktop/Facebook data/BsAs_facebookpop/",
     colnames = c(
       "lat",
@@ -101,7 +101,7 @@ de cada QuadKey.
 
 ```{r eval= FALSE, include = TRUE}
 
-  regular_grid <- get_regular_polygon_grid(data = files)
+  regular_grid <- quadkeyr::get_regular_polygon_grid(data = files)
   files_polygons <- files |> 
     dplyr::inner_join(regular_grid$data, 
                           by = c("quadkey")) 
@@ -110,9 +110,9 @@ de cada QuadKey.
 ```
 
 
-```{r}
+```{r eval=FALSE}
     # Generate the raster files                       
-  polygon_to_raster(data = files_polygons,
+  quadkeyr::polygon_to_raster(data = files_polygons,
                     nx = regular_grid$num_cols,
                     ny = regular_grid$num_rows,
                     template = files_polygons,
@@ -122,13 +122,13 @@ de cada QuadKey.
 ```
 
 
-```{r}
+```{r eval = FALSE}
   # 7 days
   files_polygons_7 <- files_polygons |>
     apply_weekly_lag()
   
   # Generate the raster files                       
-  polygon_to_raster(data = files_polygons,
+  quadkeyr::polygon_to_raster(data = files_polygons,
                     nx = regular_grid$num_cols,
                     ny = regular_grid$num_rows,
                     template = files_polygons,
@@ -204,10 +204,10 @@ polygon_to_raster(data = polyvar7,
  
 ### AMBA
 
-```{r}
+```{r eval = FALSE}
 library(quadkeyr)
 
-files <- read_fb_mobility_files(
+files <- quadkeyr::read_fb_mobility_files(
   path_to_csvs = "../../Desktop/Facebook data/AMBA_facebookpop/",
   keep_format = "country",
   colnames = c(
@@ -234,7 +234,7 @@ files <- read_fb_mobility_files(
 Aparentemente hay algunos quadkeys problemáticos porque tienen errores,
 los elimino.
 
-```{r}
+```{r eval = FALSE}
 # remuevo los datos problematicos.
 error_scinot <- subset(files, 
                        quadkey == "2.10321E+15     ")
@@ -256,7 +256,7 @@ files = subset(files,
 
 Obtengo la grilla con los QuadKeys
 
-```{r}
+```{r eval = FALSE}
 library(sf)
 amba <- st_read('data/amba_reducido.gpkg')
 
@@ -274,15 +274,9 @@ regular_grid
 
 Cargo el mapa vectorial de AMBA y dejo solo los polígonos que estan incluidos.
 
-```{r}
-
-
-```
-
 En `joined_data` tengo los polígonos incluidos en AMBA
 
-```{r}
-
+```{r eval=FALSE}
 
 # Generate the raster files                       
 polygon_to_raster(data = files_polygons,
@@ -295,7 +289,7 @@ polygon_to_raster(data = files_polygons,
 ```
 
 
-```{r}
+```{r eval=FALSE}
 # 7 days
 files_polygons_7 <- files_polygons |>
   apply_weekly_lag()

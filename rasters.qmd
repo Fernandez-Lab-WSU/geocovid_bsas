@@ -1,0 +1,208 @@
+---
+title: "rasters"
+format: html
+---
+
+
+
+```{r}
+library(dplyr)
+library(lubridate)
+library(geocovidapp)
+library(config)
+library(terra)
+library(rasterVis)
+library(tidyterra)
+library(tibble)
+library(ggplot2)
+library(pool)
+```
+
+
+```{r}
+
+rasters <- geocovidapp::base_raster |> 
+  mutate(
+    fecha = as.Date(fecha),
+    mes = month(fecha, label = TRUE, abbr = FALSE),
+    year = year(fecha))
+
+# Agrupa por año-mes
+rasters_grouped <- rasters  |> 
+  group_by(year, mes)  |> 
+  group_split()
+```
+
+```{r}
+
+# Conecto con la base de datos
+db <- config::get("database")
+
+pool <- pool::dbPool(
+  drv = RPostgres::Postgres(),
+  dbname = db$dbname,
+  user = db$user,
+  password = db$password,
+  port = db$port,
+  host = db$host
+)
+# onStop(function() {
+#   pool::poolClose(pool)
+# })
+
+
+ # Extraer el raster correspondiente
+        raster_data <- geocovidapp::base_raster |>
+          dplyr::filter(
+            tipo_de_raster == "7dpc",
+            momento == "noche", # es un valor no reactivo
+            locacion == "amba"
+          )
+  
+     for (i in seq_len(nrow(raster_data))) {    
+       
+       # Define ancho y alto en pixeles
+ancho_px <- 700   # 7 columnas x 100 px cada una (ajustar según necesidad)
+alto_px  <- 400   # 4 filas x 100 px cada una (ajustar según necesidad)
+
+# Nombre del archivo
+png(paste0("rasters/",deframe(raster_data[i, "file_info"]),".png"), width = ancho_px, height = alto_px, res = 150) # res=150 para buena resolución
+
+
+     # Bajo el raster de la base de datos
+     r <-   geocovidapp::rasterLoader(pool = pool,
+                    raster_data = raster_data[i,],
+                    area = "amba")
+     
+
+# Clasifica el raster en estos bins (regresa un raster con valores enteros 1, 2, ..., 11)
+r_class <- classify(r, rbind(
+  c(40, Inf, 1),
+  c(30, 40, 2),
+  c(20, 30, 3),
+  c(10, 20, 4),
+  c(1, 10, 5),
+  c(-1, 1, 6),
+  c(-10, -1, 7),
+  c(-20, -10, 8),
+  c(-30, -20, 9),
+  c(-40, -30, 10),
+  c(-Inf, -40, 11)
+))
+
+# Ahora define tu paleta (11 colores)
+my_colors <- c(
+  "#FF0000", "#FF3300", "#FF6600", "#FF9900", "#FFCC00", # positivos (rojos)
+  "#FFFFFF",                                             # neutro (blanco)
+  "#00FFFF", "#00BFFF", "#0080FF", "#0040FF", "#0000FF"  # negativos (azules)
+)
+
+# Asigna nombres a las clases si quieres
+levels(r_class) <- data.frame(ID = 1:11,
+                            category = c("> 40", "30 a 40", "20 a 30", "10 a 20", "1 a 10",
+               "-1 a 1",
+               "-10 a -1", "-20 a -10", "-30 a -20", "-40 a -30", "< -40"))
+
+
+
+# Plot del raster
+plot(r_class, col = my_colors, legend = FALSE)
+
+dev.off()
+  
+}
+    
+```
+
+
+```{r}
+library(terra)
+library(tidyverse)
+library(stringr)
+library(patchwork)
+library(cowplot)
+library(tibble)
+library(purrr)
+library(lubridate)
+
+# Lista archivos
+files <- list.files("rasters/", pattern = "\\.png$", full.names = TRUE)
+
+  nombres_meses <- c(
+  "enero", "febrero", "marzo", "abril", "mayo", "junio",
+  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+) # se puede hacer con lubridate pero implica cambiar la config del sistema a espanol
+  # puede que no sea reproducible en otras pcs
+
+  
+extract_info <- function(path) {
+  # Obtiene solo el nombre base
+  name <- basename(path)
+  # Quita extensión
+  name <- str_remove(name, "\\.png$")
+  # Divide por guiones bajos
+  parts <- str_split(name, "_", simplify = TRUE)
+  
+  tibble(
+    file = path,
+    prefix = parts[1],
+    indicator = parts[2],
+    date = as.Date(parts[3]),
+    suffix = parts[4],
+    month = nombres_meses[month(date)],
+    weekday = weekdays(date, abbreviate = TRUE),
+    weekday_num = wday(date, week_start = 1) # lunes = 1
+  )
+}
+
+imgs_tbl <- map_dfr(files, extract_info)
+
+imgs_tbl
+
+
+
+```
+
+
+
+```{r}
+library(png)
+library(patchwork)
+library(magick)
+library(ggplot2)
+library(dplyr)
+
+# Función para mostrar PNG en ggplot
+plot_png <- function(path) {
+  ggdraw() + draw_image(path) +
+    theme(plot.margin = margin(0, 0, 0, 0))
+}
+
+# Agrupa por mes
+imgs_tbl <- imgs_tbl  |> 
+  arrange(month, date)  # optional, for safety
+
+plots_per_month <- split(imgs_tbl, imgs_tbl$month)
+
+# Recorre cada grupo por mes
+for (month_imgs in plots_per_month) {
+  if (nrow(month_imgs) == 0) next  # salta si está vacío
+  
+  # Ordena por weekday_num
+  month_imgs <- month_imgs  |>  arrange(weekday_num)
+  
+  # Crea plots
+  plots <- map(month_imgs$file, plot_png)
+  
+  # Combina en grilla de 7 columnas
+  grid <- wrap_plots(plots, ncol = 7) + plot_annotation(title = imgs_tbl$month) 
+  
+  
+  print(grid)
+}
+
+
+```
+
+
+

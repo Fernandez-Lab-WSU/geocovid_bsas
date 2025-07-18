@@ -25,7 +25,13 @@ prepandemia para mañana y tarde, ya que se asume que deberían ser similares.
 library(sf)
 library(plotly)
 library(tidyverse)
+library(geocovidapp)
 library(terra)
+library(DBI)
+library(pool)
+library(config)
+library(sf)
+library(RPostgres)
 ```
 
 ## 1. Guardo información de los rasters en un dataset 
@@ -58,7 +64,7 @@ tarde (4 pm).
 - Se crea una variable, `px_mean_dianoche`, que promedia los valores de
 mañana (8 am) y tarde (4 pm).
 
-```{r}
+```{r include = TRUE, eval = FALSE}
 
 px_baires <- c()
 
@@ -101,7 +107,7 @@ px_baires_w
 
 Las variables `px_mean_dianoche` y `noche_0` se convierten en categóricas.
 
-```{r}
+```{r include = TRUE, eval = FALSE}
   px_bsas <-  px_baires_w  |>
            # dplyr::filter(fecha == '2020-05-06',
            #            tipo_de_raster == 'pc'
@@ -170,13 +176,21 @@ Las variables `px_mean_dianoche` y `noche_0` se convierten en categóricas.
                                                    "menor a -40"))) |>
   st_as_sf()
 
-
-#write_sf(px_bsas, "data/procesada/px_baires_demo_app.gpkg")
-
 ```
+```{r include=FALSE, eval=TRUE}
+# No puedo correr el codigo realmente porque no tengo la carpeta con los rasters disponible.
+#write_sf(px_bsas, "data/procesada/px_baires_demo_app.gpkg")
+px_bsas <- st_read("data/procesada/px_baires_demo_app.gpkg")
+```
+
+
 Para subir los datos a PostgreSQL uso el siguiente código.
 
 ```{r}
+
+# Conecto con la base de datos
+db <- config::get("database")
+
 pool <- dbConnect(
   RPostgres::Postgres(),
   dbname = db$dbname,

@@ -18,12 +18,15 @@ website:
           - analisis_datos_covid.qmd
           - creacion_de_rasters.qmd
           - calculo_movilidad_por_departamento.qmd
+          - rasters.qmd
+          
 
 format:
   html:
     theme: cosmo
     css: styles.css
     toc: true
+    fig-align: left
 
 execute:
   freeze: true

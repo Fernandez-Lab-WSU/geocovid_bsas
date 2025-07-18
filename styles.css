@@ -1,1 +1,13 @@
 /* css styles */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+.cell {
+  border: 1px solid #ddd;
+  padding: 5px;
+  text-align: center;
+}
